@@ -52,7 +52,7 @@ UNIQUE = [
     ("Runs on a 64 GB host", "PLE pinned in RAM: 26.8 GiB instead of 47.7 GiB (FP8)"),
     ("Buffer-only HiCache on NVMe", "no RAM cache: 4 GB buffer, 200 GB SSD (saves a lot of host RAM!)"),
     ("NVFP4 KV + HiCache", "FP4 block scales travel with the KV (the overlay refuses it)"),
-    ("Self-learning draft vocab", "8K ring of recent agent tokens, LRU/LFU (idea: vLLM V3)"),
+    ("Self-learning draft vocab", "learning 8K map, LRU/LFU/tiered (vLLM V3 had a 1K ring)"),
     ("Faster startup", "359 s -> 281 s, autotune 52 s -> 4 s"),
 ]
 

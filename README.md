@@ -3,7 +3,8 @@
 **Full SGLang speed for Qwen3.8 Flash-Next on a 64 GB laptop with an RTX PRO 6000 eGPU, without compromises.**
 
 speedy is a **multi-source fork**: it starts from upstream SGLang and takes the best patches of every
-Qwen3.8 Flash-Next fork (Lesilva, Pennyroyal, hyudryu's vLLM V3, NVIDIA's open PRs), plus its own.
+Qwen3.8 Flash-Next fork (Lesilva's NVFP4 KV, Pennyroyal, ideas from hyudryu's vLLM V3, NVIDIA's open PRs),
+plus its own.
 
 <p align="center">
   <img src="docs/assets/speedy-only-in-speedy.gif" alt="Only in speedy" width="880">
@@ -25,7 +26,7 @@ Qwen3.8 Flash-Next fork (Lesilva, Pennyroyal, hyudryu's vLLM V3, NVIDIA's open P
 | **Runs on a 64 GB host** | 34.8 GiB host RAM for the whole server: packed NVFP4 PLE pinned at 26.8 GiB instead of 47.7 GiB |
 | **Buffer-only HiCache on NVMe (saves a lot of host RAM!)** | no RAM cache tier: a 4 GB transfer buffer feeds a 200 GB NVMe prefix cache; others keep 32 GB HiCache in RAM |
 | **NVFP4 KV together with HiCache** | 1M-token KV pool; FP4 block scales travel with every cached page |
-| **Self-learning draft vocabulary** | the idea from hyudryu's vLLM V3, ported to SGLang: 48K static map + 8K ring of your agents' latest tokens |
+| **Self-learning draft vocabulary** | hyudryu's vLLM V3 had a 1K fifo ring; speedy learns: 8K slots, last-used/LFU/tiered cache, persists across restarts. Draft misses 5.27 % → 0.19 % |
 | **Ready in 281 s** | instead of 359 s (−22 %): kernel, JIT and autotune caches survive restarts |
 
 Tested host: **Lenovo ThinkPad L15 Gen 2**, i5-1145G7 (4 cores), **64 GB RAM**, RTX PRO 6000 Blackwell 96 GB
@@ -44,8 +45,8 @@ flowchart LR
   N["Open upstream PRs (26)<br/>incl. NVIDIA #46153 #41624 #48249"] --> S
   L["Lesilva<br/>NVFP4 KV overlay"] --> S
   P["Pennyroyal (jpezzulli)<br/>QSA serving, adaptive MTP config"] --> S
-  V["hyudryu vLLM V3<br/>token map + dynamic draft vocab idea"] --> S
-  O["Own patches (24)<br/>buffer-only HiCache, NVFP4 KV + HiCache,<br/>64 GB host, startup caches"] --> S
+  V["hyudryu vLLM V3 (our previous vLLM line)<br/>ideas: NVIDIA checkpoint, 1K dynamic vocab ring"] --> S
+  O["Own patches (24)<br/>buffer-only HiCache, NVFP4 KV + HiCache,<br/>learning token map, 64 GB host, startup caches"] --> S
   S(["speedy-luni-sglang-rtx6000 rc2<br/>154 patches"])
   H["HyperBurst (aiueo52)<br/>MoE / PDL ports"] -.->|rc3| S
 ```

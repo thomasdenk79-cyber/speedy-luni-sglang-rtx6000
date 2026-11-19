@@ -20,7 +20,7 @@ and takes the best parts of every Qwen3.8 Flash-Next fork, plus own patches:
 | [Lesilva NVFP4 KV overlay](https://github.com/Lesilva/qwen38-flashnext-nvfp4-kv) | NVFP4 KV cache for QSA (about -41 % KV memory) |
 | [Pennyroyal](https://github.com/jpezzulli/sglang-rtxpro6000) by jpezzulli | QSA serving work and the adaptive MTP config |
 | [HyperBurst](https://github.com/aiueo52/sglang-rtxpro6000) by aiueo52 | benchmark reference; draft MoE GEMV, MoE prune and PDL ports are queued for rc3 (QFN-0193…0208) |
-| [hyudryu vLLM V3](https://github.com/hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000), our previous vLLM line | 48K static draft token map (MIT), the dynamic draft-vocab ring idea, host-persistent compile/autotune caches |
+| [hyudryu vLLM V3](https://github.com/hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000), our previous vLLM line | two ideas: serve NVIDIA's official FP4-Local checkpoint, and a dynamic 1K-token draft-vocab ring; plus the 48K static token map (MIT) |
 | **Own patches** (24 in rc2) | buffer-only HiCache with NVMe streaming, NVFP4 KV + HiCache, self-learning draft vocab, 64 GB host, startup caches |
 
 ## Why speedy
@@ -50,7 +50,8 @@ Six features that, as far as we know (2026-11-19), no other SGLang build for thi
    [#48249](https://github.com/sgl-project/sglang/pull/48249)); speedy carries them, plus a loader fix
    (QFN-0093…0096). [Pennyroyal](https://github.com/jpezzulli/sglang-rtxpro6000) and
    [HyperBurst](https://github.com/aiueo52/sglang-rtxpro6000) document community checkpoints
-   (OrcaRouter, RadixArk).
+   (OrcaRouter, RadixArk). The idea to serve the NVIDIA checkpoint comes from hyudryu's vLLM V3 build;
+   speedy brings it to SGLang.
 2. **Runs on a 64 GB host.** The PLE table stays pinned in host RAM as packed NVFP4: **26.8 GiB** instead
    of 47.7 GiB for the FP8 table (HyperBurst README) or the 95.4 GiB BF16 table the stock loader would
    build. HyperBurst documents ~100 GiB of host RAM with its defaults, and 53.6 GiB only with HiCache
@@ -66,12 +67,19 @@ Six features that, as far as we know (2026-11-19), no other SGLang build for thi
    the K/V codes, so a restore would lose the FP4 block scales.
    speedy keeps the scales and the MTP draft KV in sidecars that travel with every page
    (QFN-0137…0140). The result is a 1M-token KV pool plus the NVMe cache.
-5. **Self-learning draft vocabulary, ported from vLLM to SGLang.** The idea comes from the vLLM V3 build
-   by [hyudryu](https://github.com/hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000) (pruned draft head plus a
-   1,024-slot ring of prompt and output tokens), which we ran as our vLLM line before speedy. speedy brings
-   it to SGLang and extends it: the 48K static map plus an **8K-token ring** of the tokens your agents used
-   most recently (identifiers, paths, project names), with fifo/lru/lfu/tiered policies and optional
-   persistence (QFN-0099, QFN-0148). The drafter learns the project while it works, with no restart.
+5. **Self-learning draft vocabulary.** The starting point is the vLLM V3 build by
+   [hyudryu](https://github.com/hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000), our previous vLLM line: a
+   48K static draft map plus a simple 1,024-slot first-in-first-out ring of prompt and output tokens.
+   speedy turns this into a **learning token map** for SGLang (QFN-0099, QFN-0148):
+   - **8x larger:** 8,192 dynamic slots on top of the 48K static map (identifiers, paths, project names).
+   - **Smarter cache:** besides fifo, last-used (LRU), decayed-frequency (LFU) and tiered policies; tokens
+     that keep getting accepted are promoted to a protected tier instead of being pushed out by the stream.
+   - **Learns across restarts:** learned scores persist per profile, and a top-K map can be exported.
+   - **No cost on the hot path:** in-place updates in fixed buffers, no host sync, CUDA graphs stay valid.
+
+   CPU simulation on 2M-token code and prose workloads, 8 interleaved sessions: the static map alone
+   misses 5.27 % of output tokens; an 8K ring cuts that to 0.22 % (fifo) and 0.19 % (LRU), and 0.11 % with
+   a 24K LRU. Production runs 8K slots; the policy switch from fifo to LRU/tiered is opt-in.
 6. **Faster restarts.** Ready in **281 s** instead of **359 s** (−22 %, medians of 6 and 5 real starts).
    Kernel, JIT and FlashInfer autotune caches survive container recreation, and autotune drops from
    52 s to 4 s (QFN-0145/0146).
@@ -284,8 +292,8 @@ speedy-luni-sglang-rtx6000 is released under Apache-2.0 and builds on:
   official `nvidia/Qwen3.8-Flash-Next-FP4-Local` checkpoint.
 - **HyperBurst** by aiueo52 (aiueo52/sglang-rtxpro6000, Apache-2.0): benchmark reference; ports of its draft
   MoE GEMV, MoE prune and PDL work are queued for rc3 (QFN-0193…0208).
-- **hyudryu** (hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000, vLLM V3, MIT): the dynamic draft-vocabulary idea
-  and the 49,152-token draft
+- **hyudryu** (hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000, vLLM V3, MIT): the ideas to serve the NVIDIA
+  FP4-Local checkpoint and to add a dynamic draft-vocabulary ring, and the 49,152-token draft
   vocabulary V3 in `tokenmaps/`; the MIT text is in `tokenmaps/hyudryu_LICENSE`.
 
 Details are in [NOTICE](../../NOTICE). Model weights are not distributed.

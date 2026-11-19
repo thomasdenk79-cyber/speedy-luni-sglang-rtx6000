@@ -43,8 +43,9 @@ Every third-party commit keeps its original author in Git; the patch register
    Copyright (c) 2026 Mark (hyudryu). MIT License, full text in
    tokenmaps/hyudryu_LICENSE. The .pt file is the same id list re-saved with
    torch.save; the ids are unchanged. The dynamic draft-vocabulary ring
-   (QFN-0099, QFN-0148) is an SGLang reimplementation of the idea from the
-   same vLLM V3 build.
+   (QFN-0099, QFN-0148) is an SGLang reimplementation and extension of the
+   1K ring idea from the same vLLM V3 build, which also served the NVIDIA
+   FP4-Local checkpoint first.
 
 Model weights are not part of this repository or of any release; obtain them
 from their publisher under their own license.
