@@ -1,0 +1,1928 @@
+patches:
+- 'no': 1
+  subject: '[Doc] diffusion: Include action generation across public entry points (#50868)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50868'
+- 'no': 2
+  subject: '[Perf] [AMD] custom-all-reduce: Drop the gfx1250 2shot_push clamp and retune carv2 (#50656)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50656'
+- 'no': 3
+  subject: '[Feat] [AMD] hicache: Enable HiCache for DSA DCP with a packed MTP draft (#45205)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#45205'
+- 'no': 4
+  subject: '[Fix] diffusion/sana: Honor --vae-tiling in the AutoencoderDC VAE (#34514)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#34514'
+- 'no': 5
+  subject: '[Fix] diffusion: Align FLUX.3 request sizes to the 16-pixel latent grid (#50638)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50638'
+- 'no': 6
+  subject: '[Perf] [AMD] deepseek-v4.1: Build the low-ratio extend slot gather once per forward, without a host sync (#50512)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50512'
+- 'no': 7
+  subject: '[Perf] [AMD] distributed: Run the fused AR + RMSNorm + per-group FP8 quant on gfx942 (#49884)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49884'
+- 'no': 8
+  subject: '[Fix] [AMD] dsa: Use 64-bit token offsets in the Triton sparse MLA kernels (#50870)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50870'
+- 'no': 9
+  subject: '[Feat] inkling2: Add all-reduce and exchange kernels (#50526)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50526'
+- 'no': 10
+  subject: '[Feat] inkling2: Add dense-path kernels (#50524)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50524'
+- 'no': 11
+  subject: '[Feat] [NPU] prefill: breakable prefill graph for DSV4 and ascend_ops MoE (#49481)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49481'
+- 'no': 12
+  subject: '[Fix] multimodal: Match CUDA tensors by device type for cuda-only gpu_tensors_blake3 kernel (#50470)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50470'
+- 'no': 13
+  subject: '[Fix] scheduler: Reserve encoder-replay rows in the shortest-prefill-first chunk reservation (#46063)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46063'
+- 'no': 14
+  subject: '[Feat] gc: Log GC passes and long-GC warnings in every server process (#50882)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50882'
+- 'no': 15
+  subject: '[Feat] [NPU] attention: Support FP8 KV for DSA decode context parallelism (#50097)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50097'
+- 'no': 16
+  subject: '[Fix] [NPU] kda: Fix Ascend prefill crash due to missing kernel flag (#50725)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50725'
+- 'no': 17
+  subject: '[Fix] kimi-k3: Handle idle attention-DP ranks and match the KDA checkpoint dtype (#50839)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50839'
+- 'no': 18
+  subject: '[Fix] scheduler: Dedupe shared prefixes in shortest-first order under SPF (#46022)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46022'
+- 'no': 19
+  subject: '[Test] hisparse: Cover the PD decode retraction rebootstrap path (#40732)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#40732'
+- 'no': 20
+  subject: '[Fix] [MUSA] sgl-kernel: Restore the MUSA AOT wheel build (#50486)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50486'
+- 'no': 21
+  subject: '[Feat] [NPU] glm5: Support GLM-5.3-Flash on Ascend A3/A5 (#43305)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#43305'
+- 'no': 22
+  subject: '[CI] wait-for-jobs: Retry transient GitHub API errors (#42806)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#42806'
+- 'no': 23
+  subject: '[Fix] hisparse: Give the plain pool fake in the retraction test the allocator''s state field (#50937)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50937'
+- 'no': 24
+  subject: '[Perf] [AMD] qwen3.5: Route the 512-expert softmax router through aiter topk_gating on gfx942 (#50503)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50503'
+- 'no': 25
+  subject: '[Perf] [AMD] moe: Run the Qwen3.5 small-M fused router on gfx942 (#50504)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50504'
+- 'no': 26
+  subject: '[Refactor] comm: Route the remaining inline Lamport markers through LamportTrait (#50764)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50764'
+- 'no': 27
+  subject: '[Perf] dsv41: Share Engram tables across servers with replication group_shards (#50471)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50471'
+- 'no': 28
+  subject: '[Perf] disaggregation: Stream a PD decode request''s first token with its first decode output (#50895)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50895'
+- 'no': 29
+  subject: '[CI] deps: Cap ml-dtypes below 0.6 with the lmms_eval install (#50940)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50940'
+- 'no': 30
+  subject: '[Feat] inkling2: Add MoE routing, quantization and grouped GEMM kernels (#50525)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50525'
+- 'no': 31
+  subject: '[Feat] fa4: Add the relative-bias decode kernel for Inkling 2 (#50523)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50523'
+- 'no': 32
+  subject: '[Perf] tokenizer_manager: Poll client disconnects once per wait timeout, not per streamed chunk (#50741)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50741'
+- 'no': 33
+  subject: '[Fix] [NVIDIA] mega_moe: Stop DeepGEMM''s MLOPart helper before every KV cache sizing (#50771)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50771'
+- 'no': 34
+  subject: '[Fix] kda: Align unfused safe-gate diagonal normalization anchor (#48745)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48745'
+- 'no': 35
+  subject: '[CI] [AMD] deepseek-r1: Align the MI35x MXFP4 TP4 MTP GSM8K gate with the non-MTP test (#49384)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49384'
+- 'no': 36
+  subject: '[Feat] [NPU] Qwen3.8-Flash-Next: Support graph replay, MTP, and Triton kernels (#37570)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#37570'
+- 'no': 37
+  subject: '[Fix] gemma4: Feed the AR fusion test''s DeepGEMM UE8M0 weight scales on Blackwell (#50941)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50941'
+- 'no': 38
+  subject: '[Doc] diffusion: Show the logo on the docs and cookbook landing pages (#50867)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50867'
+- 'no': 39
+  subject: '[Refactor] diffusion: Remove dead code in entrypoints, managers and server args (#49840)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49840'
+- 'no': 40
+  subject: '[Doc] [AMD] dsv41: Add MI355X DP attention agentic recipes for concurrency 128 and 256 (#50677)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50677'
+- 'no': 41
+  subject: '[Fix] scheduler: Wait for the launched forward before writing weights (#50717)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50717'
+- 'no': 42
+  subject: '[Feat] kimi_k3: Merge the rest of the Kimi-K3.1 Day-0 branch (#48414)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48414'
+- 'no': 43
+  subject: '[Chore] [AMD] aiter: Bump the gfx942/gfx950 pin to 581579ab5 (#50759)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50759'
+- 'no': 44
+  subject: '[Test] [NPU] rl: Add P0 RLHF lifecycle coverage (#49289)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49289'
+- 'no': 45
+  subject: '[Feat] [NPU] graph: Compile decode graphs with npugraph_ex and optional static kernels (#49999)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49999'
+- 'no': 46
+  subject: '[Doc] diffusion: update logo (#50960)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50960'
+- 'no': 47
+  subject: '[CI] [AMD] nightly-benchmark: Run InferenceX''s AgentX Muse Spark Open MXFP4 DFlash2 curve on MI35x (#50747)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50747'
+- 'no': 48
+  subject: '[Feat] gc: Add idle freeze and checks for heap growth and frozen garbage (#50883)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50883'
+- 'no': 49
+  subject: '[Perf] [Intel] dp: Routes all_gather_into_tensor and reduce_scatter_tensor to shm kernels (#41521)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#41521'
+- 'no': 50
+  subject: '[CI] hardware: Gate non-NV/AMD hardware CI behind `run-ci-<hw>-extra` labels (#50872)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50872'
+- 'no': 51
+  subject: '[Fix] [NPU] diffusion: MiniMax-H3 crashes with mxfp8 quantization or ref2va configuration (#50117)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50117'
+- 'no': 52
+  subject: '[Test] [NPU] deepseek-v4: Enable DSPARK on PD prefill and add off-CP / off-DSPARK testcases (#50925)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50925'
+- 'no': 53
+  subject: '[Perf] [NPU] MiniMax-H3: optimize RMSNorm and SwiGLU (#49353)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49353'
+- 'no': 54
+  subject: '[Feat] [NPU] hicache: back hugepage host pools with the mmap allocator (#50676)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50676'
+- 'no': 55
+  subject: '[Feat] [NPU] layernorm-sp: Support sequence parallel on NPU (#41496)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#41496'
+- 'no': 56
+  subject: '[Perf] [AMD] dsv4: aiter sparse prefill, fp8 wo_a and mxfp8_128 GEMM (#48064)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48064'
+- 'no': 57
+  subject: '[Fix] gc: Collect before freezing the heap (#50980)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50980'
+- 'no': 58
+  subject: '[Feat] benchmark: add rerank benchmark client (#47854)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#47854'
+- 'no': 59
+  subject: '[CI] npu: Update SGLANG_KERNEL_NPU_TAG to 2026.11.0.post6 (#50884)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50884'
+- 'no': 60
+  subject: '[Feat] KVShard: Enable KV cache sharding for Qwen3.8 Flash Next (#44447)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#44447'
+- 'no': 61
+  subject: '[Perf] [AMD] qwen3_5: use strided GDN prefill projection views on HIP (#41683)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#41683'
+- 'no': 62
+  subject: '[Fix] [NPU] distributed: Avoid NVML queries in multimem initialization (#50744)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50744'
+- 'no': 63
+  subject: '[Fix] gc: Keep the heap frozen after a CUDA graph capture (#50981)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50981'
+- 'no': 64
+  subject: '[Fix] [AMD] dsv4: Fix the mHC weight orientation across layer boundaries (#48065)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48065'
+- 'no': 65
+  subject: '[Fix] cuda-graph: Free the old decode graphs before a recapture (#50982)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50982'
+- 'no': 66
+  subject: '[Fix] diffusion: Align Ideogram 4 request sizes to the 16-pixel patch grid (#50640)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50640'
+- 'no': 67
+  subject: '[Perf] [AMD] dspark: Speed up the DSPARK draft step (#48095)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48095'
+- 'no': 68
+  subject: '[Test] kernels: Remove input-rejection cases that only test generic argument checking (#50824)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50824'
+- 'no': 69
+  subject: '[Perf] [NVIDIA] dsv4: Score the V4.1 prefill indexer with DeepGEMM fp8 MQA logits on Hopper (#50719)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50719'
+- 'no': 70
+  subject: '[Perf] [AMD] gemm: K-start rotation and a flat partial sum for the BF16 row-major small-M GEMM (#50686)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50686'
+- 'no': 71
+  subject: '[CI] docker: Drop sgl-fa3 from the CUDA 13.4 image (#50994)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50994'
+- 'no': 72
+  subject: '[Fix] [AMD] mla: Bound absorb-BMM wave budget (follow-up to #46918) (#49732)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49732'
+- 'no': 73
+  subject: '[Fix] disaggregation: Set aux-exchange and deferred-ACK fields on the KV-shard CP-TP test manager (#50995)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50995'
+- 'no': 74
+  subject: '[CI] [NPU] test: Optimized the multi-node e2e test method (#50969)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50969'
+- 'no': 75
+  subject: '[Doc] cookbook: Use the nemotron_3 reasoning parser for Nemotron 3 Nano Omni (#50815)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50815'
+- 'no': 76
+  subject: '[Perf] [AMD] qwen3: Fuse prefill QK-norm + RoPE on ROCm with the JIT qknorm_rope kernel (#47052)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#47052'
+- 'no': 77
+  subject: '[Chore] mem_cache: Add UMBP code owners (#51021)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#51021'
+- 'no': 78
+  subject: '[Fix] unified_cache: Restore Inkling MTP draft state in the direct external linker (#47293)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#47293'
+- 'no': 79
+  subject: '[Feat] [NPU] diffusion: Integrate MindIE-SD quantized attention into Ascend FA (#46029)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46029'
+- 'no': 80
+  subject: '[Fix] mem_cache: Insert the prompt end in the same checkpoint as an SWA branch point (#50059)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50059'
+- 'no': 81
+  subject: '[Fix] gc: Warn on frozen garbage instead of reporting a leak (#50983)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50983'
+- 'no': 82
+  subject: '[Feat] beam-search: Add trie head and shared-context attention (#44349)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#44349'
+- 'no': 83
+  subject: '[CI] suites: Unify CI suite and command names, skip instead of fail without run-ci, and share one finish-job check
+    (#50874)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50874'
+- 'no': 84
+  subject: '[CI] tests: Register the qknorm rope AMD tests under the renamed JIT stage and cap ml-dtypes on AMD (#51044)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#51044'
+- 'no': 85
+  subject: '[Feat] [AMD] moe: Run AITER MegaMoEGfx1250 with the mori dispatch (#48097)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48097'
+- 'no': 86
+  subject: '[Perf] tokenizer: Return output sampling masks as flat arrays on request (#50126)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50126'
+- 'no': 87
+  subject: '[Feat] spec: confidence-scheduled compact verify for DFLASH (#46190)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46190'
+- 'no': 88
+  subject: '[Fix] [AMD] monokernels: Keep a draft''s forward when it does not meet the spec''s hf_config (#50748)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50748'
+- 'no': 89
+  subject: '[Feat] diffusion: Enable rank-local TP checkpoint loading for MiniMax-H3 (#38766)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#38766'
+- 'no': 90
+  subject: '[Feat] CP: Prefill context parallelism for Kimi K3 (#38344)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#38344'
+- 'no': 91
+  subject: '[Fix] disaggregation: Poll the decode transfer queue while retracted requests wait (#50712)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50712'
+- 'no': 92
+  subject: '[Feat] spec/dflash: Per-request draft KV ring for all-sliding-window MHA drafts (trtllm_mha, fa4) (#50740)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#50740'
+- 'no': 93
+  subject: '[Feat] [NVIDIA] modelopt: Load NVFP4 experts with CSF-compressed scales'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 94
+  subject: '[Quantization] Serve NVFP4-packed QAD checkpoints (PLE NVFP4 + modelopt_mixed MXFP8)'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 95
+  subject: '[Perf] qwen4: pin the offloaded PLE table at its exact size'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 96
+  subject: '[Fix] qwen4_exp: Reject incomplete NVFP4 PLE checkpoints'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 97
+  subject: '[Perf] [NVIDIA] hyperconnection: Allow the HC gate side stream on SM120'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 98
+  subject: '[Fix] test_weight_utils: Drop stale is_in_ci patch from snapshot test'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 99
+  subject: '[Feature] spec: Add a dynamic draft vocabulary ring'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 100
+  subject: '[Perf] flashinfer: release the shared workspace when no backend uses it'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48258'
+- 'no': 101
+  subject: '[Perf] [NVIDIA] qsa: JIT CUDA kernel for the indexer decode scoring'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48250'
+- 'no': 102
+  subject: '[Perf] [NVIDIA] qsa: split-K sparse decode kernel for fp8 KV'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48296'
+- 'no': 103
+  subject: '[Perf] [NVIDIA] moe: Fused NVFP4 SwiGLU MoE kernel for SM120'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#48262'
+- 'no': 104
+  subject: '[Fix] hicache: Reject incomplete NIXL cache files before reading'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46131'
+- 'no': 105
+  subject: '[Fix] QSA: Stop speculative verify from overwriting the pending index-key ring'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46125'
+- 'no': 106
+  subject: '[Perf] qwen4-exp mtp: Build the draft vocab weights as placeholders'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 107
+  subject: '[MoE] Add opt-in singleton route pruning for small FlashInfer CUTLASS batches'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 108
+  subject: '[Perf] Add opt-in sm_120 skinny BF16 GEMV for the MoE router and MTP fc'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 109
+  subject: '[Perf] spec: sample the EAGLE verify tree over multiple CTAs'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 110
+  subject: '[Perf] spec: take the EAGLE draft top-1 with the sampler''s argmax'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 111
+  subject: '[Perf] spec: the tiled GDN ReplaySSM compact commit'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 112
+  subject: '[Perf] spec: compute the compact verify support''s top-p bound in two split-row launches'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 113
+  subject: '[Perf] graph: stage graph inputs through a copy plan cached per destination'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 114
+  subject: '[Perf] forward: build a text-only extend batch''s mrope rows on the device'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 115
+  subject: '[Perf] spec: let the post-verify graph key bound be raised'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 116
+  subject: '[Perf] spec: one launch each for the verify commit''s conv-window and PLE rollbacks'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 117
+  subject: '[Perf] spec: presize the EAGLE post-verify graph pool for the largest batch'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 118
+  subject: '[Perf] hicache: fetch a host-only Mamba state beside its anchor''s in-flight load'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 119
+  subject: '[Perf] hicache: back Mamba side-state rows up with a stream-ordered copy'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 120
+  subject: '[Perf] hicache: park a finished request''s tracking slot instead of waiting on its host-only checkpoint copy'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 121
+  subject: '[Perf] hicache: read a running request''s empty tracking slot from its host flag'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 122
+  subject: '[Perf] hicache: run the per-layer HiCache KV load on a configurable CTA quota'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 123
+  subject: '[Perf] hicache: split HiCache Mamba state loads over a CTA quota'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 124
+  subject: '[Perf] hicache: order write-back demotion behind stream waits instead of a host wait'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 125
+  subject: '[Perf] hicache: rank finished sub-agent sessions first for host eviction'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 126
+  subject: '[Perf] ple: back the pinned PLE host table with transparent huge pages'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#51065'
+- 'no': 127
+  subject: '[Perf] qsa: Don''t specialize the graph metadata kernels on replay batch sizes'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 128
+  subject: '[Perf] qsa: Launch the qk-norm, KV-prepare and gate kernels with PDL'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 129
+  subject: '[Feat] hicache: Scale the host Mamba-state pool independently of the KV host pool'
+  status: new
+  gpu_validated: n/a
+  upstream: upstream-open
+  note: ''
+  release: rc2
+  origin: BACKPORT-UNMERGED
+  prs: ''
+- 'no': 130
+  subject: '[Backport] [Fix] replay_ssm: Reject unflushed ReplaySSM cache checkpoints (#43749)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#43749'
+- 'no': 131
+  subject: '[Backport] [Perf] hicache: Optional parallel page reads in the file storage backend (#44776)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#44776'
+- 'no': 132
+  subject: '[Backport] [Perf] hicache: Add an opt-in O_DIRECT path to the fast_file backend (#49329)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#49329'
+- 'no': 133
+  subject: '[Backport] [Perf] hicache: bound full-hit staging waits (#46451)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#46451'
+- 'no': 134
+  subject: '[Backport] [Fix] hicache: Evict pass-through Mamba host checkpoints before path tails (#47339)'
+  status: new
+  gpu_validated: n/a
+  upstream: is-upstream
+  note: ''
+  release: rc2
+  origin: BACKPORT
+  prs: '#47339'
+- 'no': 135
+  subject: '[Stack] test: init dynamic_vocab in EAGLE draft sampling tests'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 136
+  subject: 'QSA: support NVFP4 KV cache for Qwen compressed-QSA models'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 137
+  subject: 'HiCache: pin fail-closed host rejection for QSA NVFP4 KV'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 138
+  subject: 'mem_cache: mirror QSA NVFP4 KV block scales as HiCache sidecars'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 139
+  subject: 'spec: mirror MTP draft in a sidecar for NVFP4 HiCache targets'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 140
+  subject: 'server_args: allow HiCache with QSA NVFP4 KV on implemented paths'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 141
+  subject: 'hicache file: optional O_DIRECT page reads'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 142
+  subject: 'hicache buffer: stream storage hits larger than the host arena'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 143
+  subject: 'hicache buffer: split oversize backups into staging-sized pieces'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 144
+  subject: Fix Mamba prefill slot admission
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 145
+  subject: Keep sglang JIT, torch-extension and CuTe DSL caches under SGLANG_CACHE_DIR
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 146
+  subject: Add SGLANG_STARTUP_AUTOTUNE_REPLAY to skip FlashInfer profiling on warm starts
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 147
+  subject: 'Add SGLANG_STARTUP_CSF_FAST_DECODE: numpy decode of CSF NVFP4 scales'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 148
+  subject: 'spec: adaptive dynamic draft vocabulary policies'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 149
+  subject: 'spec: report draft vocab coverage in decode log and Prometheus'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 150
+  subject: 'docs: document the dynamic draft vocabulary'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 151
+  subject: 'hicache: give the stream-restore worker an indexed CUDA device'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 152
+  subject: 'hicache buffer: warn when the TreeCore cannot split an oversize backup'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 153
+  subject: 'rust tree core: add split_for_backup for streamed HiCache backups'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 154
+  subject: 'perf(hicache): zero-copy, barrier-free HiCacheFile read path'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc2
+  origin: OWN
+  prs: ''
+- 'no': 155
+  subject: Add SGLANG_QSA_NVFP4_SCRATCH and the E4M3-safe descale recipe helpers
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 156
+  subject: Dequantize QSA NVFP4 gathers into an FP8 scratch and allow split-K decode on it
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 157
+  subject: Test NVFP4 FP8 gather scratch fidelity and launch wiring
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 158
+  subject: Assert V-side descale roundtrip in the NVFP4 FP8 prefill pack test
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 159
+  subject: 'perf(mxfp8): add a Triton skinny GEMV for dense MXFP8 linears'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 160
+  subject: 'perf(mxfp8): route skinny MXFP8 linears to the Triton GEMV in apply'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 161
+  subject: 'test(mxfp8): cover the skinny GEMV on CPU and add a GPU micro-benchmark'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 162
+  subject: 'test(mxfp8): cover M=2 and M=8 in the skinny GEMV interpreter check'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 163
+  subject: Fix graph valid counts and FA2 dtype, bound tables, log NVFP4 plan
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 164
+  subject: Compare FP8 and BF16 scratch attention end to end
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 165
+  subject: Pin FP4 recipe constants to the quantizer and document the scratch flag
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 166
+  subject: 'fix(mxfp8): harden the skinny GEMV gate, plan and scratch'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 167
+  subject: 'fix(mxfp8): ask the weight device before the skinny GEMV'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 168
+  subject: 'fix(bench): time the GEMV inside CUDA graphs, not the fallback'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 169
+  subject: 'docs(mxfp8): say what the skinny GEMV scratch counters guarantee'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: rc3
+  origin: OWN
+  prs: ''
+- 'no': 170
+  subject: 'spec: keep the draft head LRU-ordered and bucketed by batch size'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 171
+  subject: 'spec: capture the draft graphs against the batch''s head bucket'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 172
+  subject: 'test: cover draft vocab head-size buckets'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 173
+  subject: 'docs: document draft vocab head-size buckets'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 174
+  subject: 'spec: size draft vocab head buckets by rounding the batch size up'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 175
+  subject: 'spec: compact the draft vocab mirror without a temporary'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 176
+  subject: 'spec: carry draft vocab bucket recency over restarts and boot'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 177
+  subject: 'spec: bind eager draft-extend forwards to the batch bucket'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 178
+  subject: 'docs: match the dynamic draft vocab doc to the bucket contract'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 179
+  subject: 'spec: keep the bucket code formatter-clean'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 180
+  subject: 'spec: bind the eager draft extends to the padded graph shape'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 181
+  subject: 'spec: hand the captured draft head a buffer its width fits'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 182
+  subject: 'test: give the harness draft workers the bucket hooks the runners read'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 183
+  subject: 'spec: keep a damaged tok_use table from costing the warm start'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 184
+  subject: 'spec: report a bucket ladder the worker cannot use at boot'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 185
+  subject: 'docs: match the vocab doc to the bucketed capture and pool sizing'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 186
+  subject: 'test: cover the eager binds, harness contract and boot gates'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 187
+  subject: 'spec: keep the pool height off the buckets-off logits buffer path'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 188
+  subject: 'spec: keep the capture ladder off the buckets-off eager binds'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 189
+  subject: 'test: pin the buckets-off paths to the rc2 field set'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 190
+  subject: 'spec: ask the worker for its bucket ladder in one place'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 191
+  subject: 'spec: keep the capture path off a ladderless worker'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 192
+  subject: 'test: pin the capture path against a worker without bucket hooks'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:feat/draft-vocab-head-buckets
+  origin: OWN
+  prs: ''
+- 'no': 193
+  subject: 'perf(moe): port the HyperBurst draft MoE W4A16 GEMV'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 194
+  subject: 'perf(moe): run the MoE router gate as a Triton GEMV at 1..16 rows'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 195
+  subject: 'perf(mxfp8): fold the GDN gated RMSNorm into the out_proj GEMV'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 196
+  subject: 'perf(mtp): switch the MTP entry fc to the sm_120 skinny GEMV'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 197
+  subject: 'fix(moe): router GEMV gate must demand BLOCK_K-aligned K'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 198
+  subject: 'fix(moe): draft MoE GEMV must bound routes and refuse grad inputs'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 199
+  subject: 'fix(mxfp8): fused-norm GEMV gate must demand row-contiguous weights'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 200
+  subject: 'fix(moe): biased router GEMV route must be sm_120-only'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 201
+  subject: 'fix(moe): draft MoE runner must refuse activations not matching the layer'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 202
+  subject: 'fix(moe): draft MoE GEMV must refuse activations of the wrong rank'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-lowrow-kernels
+  origin: OWN
+  prs: ''
+- 'no': 203
+  subject: 'feat(environ): register SGLANG_TRITON_PDL and canonical prune-tau knob'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 204
+  subject: 'feat(kernels): gate Triton PDL wait/trigger on SGLANG_TRITON_PDL'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 205
+  subject: 'perf(moe): read the canonical prune tau and honour SGLANG_TRITON_PDL'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 206
+  subject: 'test(kernels): CPU unit tests for PDL gating and prune selection'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 207
+  subject: 'fix(kernels): fail loud on PDL/prune knobs and probe PDL at launch'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 208
+  subject: 'docs(references): add the prune tau and Triton PDL knobs'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 209
+  subject: 'fix(kernels): make launch_pdl CUDA-only and retry failed PDL probes'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 210
+  subject: 'docs(references): close the style object in the kv-splits default cell'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 211
+  subject: 'fix(kernels): treat a pre-device PDL probe as unknown, not a verdict'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 212
+  subject: 'fix(kernels): require the PDL flag off for fused-norm GEMV launches'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 213
+  subject: 'test(kernels): cover the probe retry, norm guard, trigger site, and PTX'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''
+- 'no': 214
+  subject: 'docs(references): state the sigmoid-mul arch/flag split in the PDL row'
+  status: new
+  gpu_validated: pending
+  upstream: deferred
+  note: ''
+  release: pending:perf/hb-prune-pdl
+  origin: OWN
+  prs: ''

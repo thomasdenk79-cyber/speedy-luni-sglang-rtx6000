@@ -1,0 +1,50 @@
+speedy-luni-sglang-rtx6000
+Copyright 2026 Thomas Denk
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+speedy is a multi-source fork: the engine is a fork of upstream SGLang with
+selected patches from several community forks and own patches on top.
+Every third-party commit keeps its original author in Git; the patch register
+(docs/PATCHES.md, patches/register.yaml) lists each patch with its origin
+(OWN, BACKPORT, BACKPORT-UNMERGED) and upstream PR number.
+
+1. SGLang (https://github.com/sgl-project/sglang)
+   Copyright SGLang contributors. Apache License 2.0.
+   The engine is tag speedy-rc2 of https://github.com/thomasdenk79-cyber/sglang
+   (a fork of sgl-project/sglang): SGLang nightly commit 25c1c439 plus
+   backported upstream pull requests (authors preserved in Git) and own
+   patches.
+
+2. Pennyroyal / sglang-rtxpro6000 (https://github.com/jpezzulli/sglang-rtxpro6000)
+   Copyright its contributors. Apache License 2.0.
+   QSA serving work for the RTX PRO 6000. configs/adaptive-next-tiered.json
+   is copied unchanged from Pennyroyal configs/pennyroyal/adaptive-next.json.
+
+3. NVFP4 KV overlay (https://github.com/Lesilva/qwen38-flashnext-nvfp4-kv)
+   Copyright 2026 Lesilva. Apache License 2.0.
+   The NVFP4 KV cache for QSA is ported from this overlay onto upstream
+   SGLang (see docs/PATCHES.md).
+
+4. HyperBurst (https://github.com/aiueo52/sglang-rtxpro6000,
+   https://github.com/aiueo52/hyperburst-rtxpro6000)
+   Copyright aiueo52. Apache License 2.0.
+   Benchmark reference. Ports of its draft MoE GEMV, MoE prune and PDL
+   work are queued for rc3 (QFN-0193...0208 in docs/PATCHES.md).
+
+5. NVIDIA pull requests to SGLang (#46153, #41624, #48249)
+   Copyright their authors. Apache License 2.0.
+   Backported while still open upstream; needed for the
+   nvidia/Qwen3.8-Flash-Next-FP4-Local checkpoint.
+
+6. Draft token map (tokenmaps/hyudryu_top49152.{json,pt})
+   From https://github.com/hyudryu/Qwen3.8-Flash-Next-FP4-1xRTXPro6000
+   (vLLM-based setup, token map version V3).
+   Copyright (c) 2026 Mark (hyudryu). MIT License, full text in
+   tokenmaps/hyudryu_LICENSE. The .pt file is the same id list re-saved with
+   torch.save; the ids are unchanged. The dynamic draft-vocabulary ring
+   (QFN-0099, QFN-0148) is an SGLang reimplementation of the idea from the
+   same vLLM V3 build.
+
+Model weights are not part of this repository or of any release; obtain them
+from their publisher under their own license.
