@@ -80,9 +80,21 @@ Six features that, as far as we know (2026-11-19), no other SGLang build for thi
    CPU simulation on 2M-token code and prose workloads, 8 interleaved sessions: the static map alone
    misses 5.27 % of output tokens; an 8K ring cuts that to 0.22 % (fifo) and 0.19 % (LRU), and 0.11 % with
    a 24K LRU. Production runs 8K slots; the policy switch from fifo to LRU/tiered is opt-in.
-6. **Faster restarts.** Ready in **281 s** instead of **359 s** (−22 %, medians of 6 and 5 real starts).
-   Kernel, JIT and FlashInfer autotune caches survive container recreation, and autotune drops from
-   52 s to 4 s (QFN-0145/0146).
+6. **Faster loading.** Ready in **281 s** instead of **359 s** (−78 s, −22 %, medians of 6 and 5 real
+   starts). Stock SGLang repeats work on every container recreate; speedy keeps it:
+   - **Autotune replay (QFN-0146):** a valid FlashInfer tactic cache is replayed instead of profiled
+     again: **52 s → 4 s**.
+   - **Persistent JIT caches (QFN-0145):** ~22 sglang JIT kernels, torch extensions and CuTe DSL kernels
+     live under `SGLANG_CACHE_DIR` instead of being rebuilt.
+   - **Packed NVFP4 PLE loader (QFN-0093…0096):** the PLE table loads packed and is pinned at its exact
+     size, 26.8 GiB instead of 47.7 GiB host RAM.
+   - **CSF fast decode (QFN-0147):** numpy decode of 73,728 CSF scale pairs, ~3× faster per pair in a
+     microbenchmark. Honest: no measurable gain in the real startup logs yet.
+   - **NVMe prefix cache stays on disk:** the 200 GB HiCache files survive a restart; their reuse after
+     a restart is not measured yet.
+
+   The first start still JIT-compiles for several minutes, so keep `CACHE_DIR` persistent.
+   HyperBurst documents ~47 min for its first build.
 
 <p align="center">
   <img src="../assets/speedy-64gb-host.gif" alt="Host RAM: HyperBurst 100.5 / 53.6 GiB vs speedy 34.8 GiB" width="720"><br>

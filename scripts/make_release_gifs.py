@@ -309,6 +309,7 @@ def startup(out):
         if sim >= STARTUP["before_s"]:
             saved = STARTUP["before_s"] - STARTUP["after_s"]
             d.text((W // 2, 315), f"-{saved} s (-{saved / STARTUP['before_s'] * 100:.0f} %)   autotune {STARTUP['autotune_before_s']} s -> {STARTUP['autotune_after_s']} s", font=F_MID, fill=CYAN, anchor="ma")
+            d.text((W // 2, 350), "JIT kernels + autotune tactics persist  |  packed NVFP4 PLE 26.8 GiB instead of 47.7", font=F_SMALL, fill=FG, anchor="ma")
         frames.append(im)
     save(frames, out / "speedy-startup.gif", hold=60)
 

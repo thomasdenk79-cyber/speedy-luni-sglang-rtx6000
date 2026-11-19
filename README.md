@@ -27,7 +27,7 @@ plus its own.
 | **Buffer-only HiCache on NVMe (saves a lot of host RAM!)** | no RAM cache tier: a 4 GB transfer buffer feeds a 200 GB NVMe prefix cache; others keep 32 GB HiCache in RAM |
 | **NVFP4 KV together with HiCache** | 1M-token KV pool; FP4 block scales travel with every cached page |
 | **Self-learning draft vocabulary** | hyudryu's vLLM V3 had a 1K fifo ring; speedy learns: 8K slots, last-used/LFU/tiered cache, persists across restarts. Draft misses 5.27 % → 0.19 % |
-| **Ready in 281 s** | instead of 359 s (−22 %): kernel, JIT and autotune caches survive restarts |
+| **Faster loading: ready in 281 s** | instead of 359 s (−22 %): JIT kernels and autotune survive restarts, autotune 52 s → 4 s, NVMe prefix cache stays on disk ([details](#faster-loading)) |
 
 Tested host: **Lenovo ThinkPad L15 Gen 2**, i5-1145G7 (4 cores), **64 GB RAM**, RTX PRO 6000 Blackwell 96 GB
 in a Razer Core X V2 **over USB4**. No workstation, no 256 GB server.
@@ -36,6 +36,25 @@ in a Razer Core X V2 **over USB4**. No workstation, no 256 GB server.
   <img src="docs/assets/speedy-64gb-host.gif" alt="Host RAM: HyperBurst 100.5 / 53.6 GiB vs speedy 34.8 GiB" width="720"><br>
   <img src="docs/assets/speedy-startup.gif" alt="Startup 359 s before vs 281 s with speedy" width="720">
 </p>
+
+## Faster loading
+
+A restart costs agents minutes. speedy removes the work that stock SGLang repeats on every container
+recreate (medians of 6 and 5 real production starts on the tested host):
+
+| Step | Stock behaviour | speedy | Patch |
+|---|---|---|---|
+| **Startup to ready** | 359 s | **281 s (−78 s, −22 %)** | all below |
+| FlashInfer autotune | profiles again on every start, 52 s | **replays the tactic cache, 4 s** | QFN-0146 `SGLANG_STARTUP_AUTOTUNE_REPLAY=1` |
+| JIT kernels (~22), torch extensions, CuTe DSL | rebuilt on every container recreate | **kept under `SGLANG_CACHE_DIR`** | QFN-0145 |
+| PLE table in host RAM | 47.7 GiB | **26.8 GiB packed NVFP4, pinned at exact size** | QFN-0093…0096 |
+| CSF scale decode (73,728 stream pairs) | 17.9–21.3 s torch dispatch | numpy decode, ~3× faster per pair in a microbenchmark | QFN-0147 `SGLANG_STARTUP_CSF_FAST_DECODE=1` |
+| NVMe prefix cache | – | 200 GB of files stay on disk across restarts | buffer-only HiCache |
+
+Honest notes: the 78 s come from the persistent caches; the CSF fast decode shows no measurable gain in
+the real startup logs yet. Reuse of the NVMe cache after a restart is not measured yet. The very first
+start still JIT-compiles for several minutes; keep `CACHE_DIR` on a persistent disk.
+HyperBurst documents ~47 min for its first build.
 
 ## Where it comes from
 
