@@ -112,8 +112,8 @@ Six features that, as far as we know (2026-11-19), no other SGLang build for thi
 
 > **One RTX PRO 6000. A whole agent swarm. 2.1 billion prompt tokens in 30 hours.**
 
-- **Real agent production, not a lab benchmark:** 33,588 requests from concurrent coding agents in 30 h,
-  2.11B prompt tokens, **94.7 % served from the prefix cache**.
+- **Real agent production, not a lab benchmark:** 35,720 requests from concurrent coding agents in 30 h,
+  2.31B prompt tokens, **94.9 % served from the prefix cache**, 642 tok/s median at 8 agents.
 - **Half a million tokens of context, back in 1.3 seconds:** 422K–502K-token prompts take 34–38 s cold
   and **1.2–1.4 s cached**, with identical output (needle test passed).
 - **Ready in 281 s:** persistent kernel and autotune caches cut a restart by 78 s (−22 %).
@@ -240,21 +240,51 @@ Long context: needle test, then the cache is flushed and the context restored.
 
 ## Field test: 30 h of agent production
 
-Source: Prometheus, engine `:30000`, 30-hour window ending 2026-11-19 05:00 CET.
+Source: Prometheus, engine `:30000`, 30-hour window ending 2026-11-19 06:05 CET.
 Workload: OpenCode / oh-my-opencode coding agents, an autonomous task operator and a multi-agent
 implement/test/review pipeline, all going through a LiteLLM gateway.
 
 | | |
 |---|---:|
-| Requests | 33,588 |
-| Prompt tokens | 2.11 B |
-| Of which served from prefix cache | 2.00 B (**94.7 %**) |
-| Generated tokens | 24.7 M |
-| Peak aggregate decode | 1,728 tok/s |
-| Running requests | up to 8, mean 1.2 over the window |
-| TTFT p50 / p95 | 0.9 s / 9.2 s |
-| Typical prompt | 139K–194K tokens, of which 0.2K–2.6K newly computed |
+| Requests | 35,720 |
+| Prompt tokens | 2.31 B |
+| Of which served from prefix cache | 2.19 B (**94.9 %**) |
+| Generated tokens | 26.6 M (246 tok/s average over 30 h) |
+| GPU busy (at least 1 running request) | 85 % of the time |
+| Running requests | mean 3.8 while busy; up to 8 (`--max-running-requests 8`) |
+| TTFT p50 / p95 / p99 | 0.9 s / 9.4 s / 30.0 s |
+| Inter-token latency p50 / p95 / p99 | 6 ms / 25 ms / 105 ms |
+| End-to-end request p50 / p95 | 5.0 s / 38.7 s |
+| MTP acceptance length (median) | 2.75 |
+| Typical prompt | 122K–192K tokens, of which 0.3K–10.7K newly computed |
 | Restarts | 1 planned (2026-11-19 01:35) |
+
+### Real decode throughput by concurrency
+
+Aggregate decode tok/s from `sglang:gen_throughput`, 15-s samples grouped by `sglang:num_running_reqs`
+(same window). Lab = BetterBench, short prompts (see [Benchmarks](#benchmarks)).
+
+| Streams | Lab | Real median | Real p90 | Real peak | Real per stream | Share of busy time |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 210 | 188 | 347 | 568 | 188 | 27 % |
+| 2 | 346 | 352 | 458 | 706 | 176 | 19 % |
+| 3 | – | 446 | 568 | 728 | 149 | 12 % |
+| 4 | 489 | 509 | 644 | 781 | 127 | 8 % |
+| 5 | – | 571 | 681 | 801 | 114 | 6 % |
+| 6 | – | 578 | 731 | 950 | 96 | 6 % |
+| 7 | – | 579 | 810 | 1,068 | 83 | 10 % |
+| 8 | 618 | **642** | 808 | 1,029 | 80 | 10 % |
+
+- At 122K–192K-token contexts, real decode matches the short-prompt lab run (8 streams: 642 vs 618).
+- 1.4 % of the samples ran 9–16 requests under an earlier test config (2026-11-18 00:35–02:07) and
+  are left out of the table; their peak was 1,727 tok/s.
+- p99 TTFT of 30 s comes from HiCache reissue-cap and queue cases; see Known limitations.
+
+<p align="center">
+  <img src="../assets/speedy-live-sgtop.png" alt="sgtop live view under 8 running agents" width="880"><br>
+  <sub>sgtop live view, 2026-11-19 06:04: 8 running agents, decode 581 tok/s (peak 893), KV 804K/1.0M tokens,
+  99 % cache hit, prompts 123K–192K, 260–10.7K tokens computed per request.</sub>
+</p>
 
 ## Known limitations
 

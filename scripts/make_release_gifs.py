@@ -6,7 +6,8 @@ Usage: python3 scripts/make_release_gifs.py [--out docs/assets]
 All numbers are measurements, not targets. Sources:
 - RESTORE: .omo-work/restore-500k-2026-11-18/restore.log (502K-token prompt)
 - DECODE:  .omo-work/bench-2026-11-18/quick-rc2-nvfp4 (BetterBench, NVFP4 KV)
-- FIELD:   Prometheus sglang:* counters, 30 h of agent production up to 2026-11-19 05:00 CET
+- FIELD:   Prometheus sglang:* counters, 30 h of agent production up to 2026-11-19 06:05 CET; tok/s = median
+           sglang:gen_throughput while 8 requests run
 - COMPARE: README and launch scripts of jpezzulli/sglang-rtxpro6000 (3.1.6) and
            hyperburst-rtxpro6000 (2026-11-12); speedy column from examples/run-rc2-production.sh
 - HOSTRAM: HyperBurst README "Host RAM" section (100.5 GiB default peak, 53.6 GiB with HiCache off);
@@ -23,11 +24,11 @@ from PIL import Image, ImageDraw, ImageFont
 RESTORE = {"tokens": 502_000, "cold_s": 38.3, "cached_s": 1.4}
 DECODE = [(1, 210), (2, 346), (4, 489), (8, 618)]
 FIELD = {
-    "requests": 33_588,
-    "prompt_tokens": 2_110_000_000,
-    "cache_pct": 94.7,
-    "generated": 24_700_000,
-    "peak_tps": 1_728,
+    "requests": 35_720,
+    "prompt_tokens": 2_310_000_000,
+    "cache_pct": 94.9,
+    "generated": 26_600_000,
+    "tps_8_agents": 642,
 }
 W, H = 880, 420
 BG = (11, 14, 26)
@@ -172,7 +173,7 @@ def field_counters(out):
         ("requests", FIELD["requests"], lambda v: f"{int(v):,}", CYAN),
         ("prompt tokens", FIELD["prompt_tokens"], human, MAGENTA),
         ("from prefix cache", FIELD["cache_pct"], lambda v: f"{v:.1f} %", LIME),
-        ("peak tok/s", FIELD["peak_tps"], lambda v: f"{int(v):,}", AMBER),
+        ("tok/s, 8 agents (median)", FIELD["tps_8_agents"], lambda v: f"{int(v):,}", AMBER),
     ]
     for f in range(n):
         im, d = canvas("30 hours of real agent production", "one RTX PRO 6000  |  concurrent coding agents  |  Prometheus counters")

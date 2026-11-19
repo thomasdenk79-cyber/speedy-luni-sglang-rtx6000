@@ -75,11 +75,38 @@ Every patch is numbered (`QFN-NNNN`) with origin, upstream PR, tests and status 
 
 ## Proof
 
-- **30 h of real agent production:** 33,588 requests, 2.11B prompt tokens, 94.7 % from the prefix cache.
+- **30 h of real agent production:** 35,720 requests, 2.31B prompt tokens, 94.9 % from the prefix cache,
+  GPU busy 85 % of the time.
 - **Half a million tokens back in 1.3 s:** 422K–502K-token prompts take 34–38 s cold, 1.2–1.4 s cached.
-- **Decode:** 210 tok/s at 1 stream, 618 tok/s at 8 streams.
 - **Prefill:** 13.0K–13.7K tok/s on 8K–64K chunks. Under agent load most prefills are short suffixes
   (< 2K tokens) and run at about 8K tok/s; that is the next optimisation target.
+
+## Benchmarks: lab vs real agent load
+
+Aggregate decode tok/s by concurrent requests (`scripts/real_load_stats.py`). **Lab:** BetterBench 0.6.0, short prompts, 48 requests
+per level. **Real:** Prometheus, 30 h of coding agents ending 2026-11-19 06:05 CET, prompts of
+**122K–192K tokens**, MTP acceptance length 2.75 (median), 15-s samples grouped by running requests.
+
+| Streams | Lab | Real median | Real p90 | Real peak | Real per stream | Share of busy time |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 210 | 188 | 347 | 568 | 188 | 27 % |
+| 2 | 346 | 352 | 458 | 706 | 176 | 19 % |
+| 3 | – | 446 | 568 | 728 | 149 | 12 % |
+| 4 | 489 | 509 | 644 | 781 | 127 | 8 % |
+| 5 | – | 571 | 681 | 801 | 114 | 6 % |
+| 6 | – | 578 | 731 | 950 | 96 | 6 % |
+| 7 | – | 579 | 810 | 1,068 | 83 | 10 % |
+| 8 | 618 | **642** | 808 | 1,029 | 80 | 10 % |
+
+- With 150K-token agent contexts, speedy holds the short-prompt lab numbers: 8 agents get 642 tok/s
+  in the median, about 80 tok/s each; bursts reach 800–1,000 tok/s.
+- Real latency over 30 h: TTFT p50 0.9 s, p95 9.4 s; inter-token latency p50 6 ms, p95 25 ms.
+- Honest: p99 TTFT is 30 s. These are the HiCache reissue-cap and queue cases (tasks 166/167).
+
+<p align="center">
+  <img src="docs/assets/speedy-live-sgtop.png" alt="sgtop live view: 8 agents, 581 tok/s, 99 % cache hit" width="880"><br>
+  <sub>Live view (sgtop) under 8 running agents: KV 804K/1.0M tokens, 99 % cache hit, prompts 123K–192K, decode peak 893 tok/s.</sub>
+</p>
 
 <p align="center">
   <img src="docs/assets/speedy-field-30h.gif" alt="30 hours of real agent production" width="720"><br>
@@ -111,6 +138,7 @@ The stock SGLang nightly image runs the speedy source tree bind-mounted; there i
 | `examples/run-rc2-production.sh` | exact production launcher |
 | `configs/`, `tokenmaps/` | adaptive MTP config, static draft token map |
 | `docs/assets/`, `scripts/make_release_gifs.py` | release GIFs and their generator |
+| `scripts/real_load_stats.py` | real agent-load numbers from Prometheus (source of the "Real" tables) |
 
 Engine source: [`thomasdenk79-cyber/sglang` @ `speedy-rc2`](https://github.com/thomasdenk79-cyber/sglang/tree/speedy-rc2).
 
