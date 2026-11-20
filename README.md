@@ -127,6 +127,9 @@ DRY_RUN=1 ./examples/run-rc2-production.sh   # print the command
 ./examples/run-rc2-production.sh
 ```
 
+HINT: Installation currently untested due its a fresh fork and i am still working on rc3/rc4 for further improvment. 
+
+
 The stock SGLang nightly image runs the speedy source tree bind-mounted; there is no image build.
 
 ## Repository layout
