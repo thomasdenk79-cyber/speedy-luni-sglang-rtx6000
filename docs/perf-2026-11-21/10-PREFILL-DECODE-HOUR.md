@@ -67,7 +67,12 @@ for stall diagnostics; tasks 169/190 address **short** chunks, not this cold com
    power, device forward elapsed time, backend/graph route and TTFT. Compare truly
    fresh 8K/16K/32K/64K separately from 8K extensions on a 200K resident prefix;
    alternate arms, at least three repeats, include spread. No live power changes.
-2. Replay identical arrivals and outputs: steady ready decodes at C1/C4 plus
+   The power cap alone does not explain the gap: the owner reports donor forks
+   (e.g. Pennyroyal) also power-limit the RTX PRO 6000 and still publish better
+   numbers; verifying each donor's actual cap is part of this task. Attribute
+   the delta only after matched-power, matched-build measurement; until then
+   the 300 W cap is a confounder, not a proven cause.
+2. Replay identical arrivals and outputs: steady ready decodes at C1/C4/C6 plus
    large new sessions. Measure emitted decode tokens per **whole elapsed hour**
    (including prefill/idle), prefill duty from device timing, decode gap and ITL
    p95/p99, TTFT and queue wait. Also run a cold-only control. Do not equate
