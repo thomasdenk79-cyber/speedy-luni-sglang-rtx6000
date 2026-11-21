@@ -13,6 +13,8 @@
   non-blocking HiCache, pinned PLE, no SSD experiments).
 - Verified PR states: [02-PATCH-PORT-MATRIX.md](02-PATCH-PORT-MATRIX.md).
 - Operator and task migration: [09-OPERATOR-TASK-MIGRATION.md](09-OPERATOR-TASK-MIGRATION.md).
+- Current release order, patch owners, evidence gates and rollback: [integration roadmap](08-INTEGRATION-ROADMAP.md).
+- [Large prefill and decode/hour](10-PREFILL-DECODE-HOUR.md): measured live window, historical baseline and matched replay.
 
 ## Deviations from the order
 | Order says | Finding | Decision |
@@ -35,6 +37,6 @@
 | `05-GPU-RESIDENT-SCHEDULER-DESIGN.md` | open | `2026-11-21-sched-tier-admission` |
 | `06-BENCHMARK-PLAN.md` | open | `2026-11-21-speedy-agentload-c1-c10` |
 | `07-QUALITY-GATES.md` | open | `2026-11-21-speedy-quality-regression` |
-| `08-INTEGRATION-ROADMAP.md` | open | `2026-11-21-speedy-release-integration` |
+| `08-INTEGRATION-ROADMAP.md` | planned; R1 hardware decision open | `2026-11-21-speedy-release-integration` |
 | `09-OPERATOR-TASK-MIGRATION.md` | done | - |
-| `RESULTS.md` | open | every benchmark task appends; no numbers without raw data |
+| [RESULTS.md](RESULTS.md) | ledger open; no campaign run entered | every benchmark task appends; no numbers without raw data |

@@ -33,3 +33,28 @@ Operator repo `luni-ai-operator`, live branch `dev` (GitHub default `master` is 
 
 GPU-heavy tasks state `GPU exclusive: yes` and run one at a time only inside an owner GPU window
 (`state/gpu-window/lease.json`); CPU-only parts (analysis, ports, unit tests, review) run while t15 serves.
+
+## Release claim recheck (Astra, 2026-11-22)
+
+The six historical claims above are not an end-to-end dispatch assurance.
+On the committed `dev` snapshot `f55fca0`, the initial `gate-deps` block in
+`bin/luni-operator.sh` follows an unconditional `continue` inside the depth
+error branch; refill does not recheck after taking its queue snapshot.
+In addition, `task_queue.py` on that commit treats brackets in `[a, b]` as
+part of the filenames while `task_fm.py` accepts name prefixes. The shared
+checkout already has local parser changes: do not replace them wholesale.
+
+The offline candidate lives in the operator worktree
+`/srv/community-repos/speedy-operator-release-claim` (based on `f55fca0`).
+It shares the exact-name check between enumeration and admission and rechecks
+at both initial and refill moves. Synthetic replay of the actual four-prerequisite
+R1 card: held with four missing; admitted with four exact done files; held
+when one was replaced with a `-review` sibling. Checker failure also holds.
+This narrows the check/move race; it is not an atomic transaction.
+
+**Disposition: not deployed.** Integrate with operator task
+`2026-11-21-operator-archived-dependency-gate` after its fixture-isolation and
+owner-review gate. Do not treat arbitrary archived cards as completed. Review
+the watchdog fallback separately (it may skip dependency-bearing tasks), run
+presubmit in isolation, then use a runner-free lifecycle window and verify a
+new claim before calling the live operator hardened.
