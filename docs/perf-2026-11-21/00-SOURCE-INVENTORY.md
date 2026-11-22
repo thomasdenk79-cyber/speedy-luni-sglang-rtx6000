@@ -61,7 +61,32 @@ the branch was actually the build source. A run that claims "rc2" must record
 | install that did **not** agree | earlier in this session an install under `/home/latz/.local/share/uv/tools/betterbench` answered `--version` with `BetterBench 0.6.0` while carrying `load_category` in `env.py` and no `corpus.py` — a dev tree, not `v0.6.0`. That path and the `latz` account are absent in the present context. Rule kept: **the printed "0.6.0" does not identify the code**; `bench/bb-campaign.sh` therefore names the interpreter it used in the log and the validator re-derives the corpus hash from the pinned build |
 | prompt corpus | shipped `v1`: 8 categories (chat 3, code 4, file_edit 3, json 4, math 4, prose 4, reasoning 4, summarization 3) = **29 prompts**; per-prompt `max_tokens` 120…900 sets the decode length |
 | corpus hash (the comparable one) | the tool's own `content_hash` over `{category: [prompt ids]}` = **`e332dceff176d033`** — identical to `env.corpus_hash` in the donor artifact `results/betterbench-1007/results.json`, so donor and campaign bench the same prompts. Asserted by `bench/bb-campaign.sh` |
-| corpus hash (tree) | `sha256` over the 8 `*.jsonl` (path + bytes) = `25609238ea6badaf9551e9b648f54d1c227f9998fc5c3df9e2a1114428a93254`, equal in source tree and installed wheel |
+| corpus hash (tree) | `sha256` over the concatenated bytes of the 8 `*.jsonl`, sorted by path = `b31e9141ad5cf1ea29f62612afc528c96649cbb0dd1504926461cfcd75a6beed`, **identical in the installed wheel (`/home/z000g9hu/.local/share/uv/tools/betterbench/lib/python3.12/site-packages/betterbench/corpus/v1`) and in the clean `v0.6.0` checkout (`/srv/community-repos/BetterBench-wt-v060/corpus/v1`)**. Reproduce: `find <dir> -name '*.jsonl' \| sort \| xargs cat \| sha256sum` |
+
+## Umgebungsbefunde des Messlaufs (22.11. 23:31–23:41 UTC)
+
+Diese Sitzung hat gegen **zwei verschiedene Baumzustände** gemessen. Beide sind notiert,
+weil Behauptungen in diesem Ordner davon abhängen.
+
+| Zeit (UTC) | Befund | Kommando |
+|---|---|---|
+| 22:33–23:31 | `$HOME` = `/home/latz` mit `betterbench` (0.6.0) und `sgemll-hyperburst` (drei saubere Repos); Ledger mit 47 Zeilen unter `/srv/edi-repos/tasks/e48-maas-optimierung/artifacts/gpuq/`; `check_arm.py`/`gpuq-runner.py` dort lauffähig; `tools/bbguard/` und die Verifikationsartefakte der Vorphase vorhanden; `luni-base`-HEAD `0125a34` | `ls`, `tail -1 ledger.jsonl`, `python3 bin/gpuq-runner.py validate --job …` |
+| 23:35–23:41 | `/home/latz` existiert nicht mehr (`$HOME` = `/home/z000g9hu`, uid 1000, Host `cachyos-x8664`); `/srv/edi-repos/tasks` fehlt (kein Mount-Eintrag dafür); `luni-base` hat HEAD `f516a9e`, 111 Commits total, und kennt `docs/perf-2026-11-21/`, `docs/releases/speedy-rc2.md`, `docs/fleet-modelcards.md`, `tools/bbguard/` nicht mehr — `git cat-file -t 0125a34` = „not a valid object"; fremder Inhalt in `docs/perf-2026-11-21/` (eigene Änderung an `20-BENCH-PLAN.md` ging verloren) | `ls`, `findmnt -T /srv/edi-repos`, `git -C … log --oneline -1`, `git cat-file -t`, `git status --short` |
+
+**Zitierregel daraus:** jeder Wert, der *nur* aus den verschwundenen Pfaden stammt — die
+47 Ledger-Zeilen (`startup_s` 293 s Median / 393 s Max, `power_max_w` ≤ 319.7 W), die
+`check_arm.py`-Ausgaben, die 156-*-Pilotakten — gilt hier als **historisch
+(Quellpfad weg)** und muss vor einer Entscheidung neu erzeugt werden. Kein Planwert
+dieses Ordners hängt an so einer Zahl; die Arme sind nach Config-Unterschieden
+definiert, nicht nach alten tok/s-Werten.
+
+**Was die zweite Sicht wieder bestätigt hat** (also gesichert ist): `uv`-Tool **und**
+sauberer `v0.6.0`-Checkout melden `BetterBench 0.6.0`, die acht Korpus-Dateien sind
+bytegleich (`b31e9141…`), `content_hash` = `e332dceff176d033` (Spender-Identität), Karte
+`ef946cf2…`, Engine unverändert (`/health` 200, `chunked_prefill_size` 8192,
+`max_prefill_tokens` 8192, `enable_mixed_chunk` False), `power.limit` 300.00 /
+`power.default_limit` 600.00, kein Lease, keine Pending-Jobs.
+
 | corpus layout | wheel force-include copies repo-root `corpus/` → `betterbench/corpus/` (pyproject `[tool.hatch.build.targets.wheel.force-include]`); `corpus_search_paths()` falls back to the source tree for editable installs. The campaign passes `--corpus` explicitly so no search-path accident can change the prompts |
 | bundled config | `config/default.json` (= `config/default.json` in the repo, echoed into `results.json["config"]`) — `temperature 0.7`, `top_p 0.95`, `top_k 20`, `greedy false`, `warmup 3`, `runs_per_category 20`, `unique_nonce true`, `concurrency_levels [1,2,4,8]`, `concurrency_requests 48`, `prefill_depths [2000,8000,16000,32000,64000]`, `prefill_runs 8`, `prefill_warmup 2`, `prefill_max_tokens 16`, `prefill_ctx_margin 256`, `conf 0.95`, `target_mde_pct 1.0`, `ab_max_pairs 200`, `ab_min_pairs 12`, `timeout_s 600` |
 | config loader trap | `Config.load()` (`betterbench/config.py:66-73`) **silently drops keys that are not fields** — a typo in the pinned card benches the default instead and nothing complains. The card is therefore `--config` JSON with verified field names, and the validator compares the echoed `config` block against the card key by key |
@@ -141,6 +166,27 @@ ls $Q/queue/pending; for r in $Q/queue/pending/*; do head -8 "$r/job"; done
 `podman exec qwen38-rc2` is broken on this host (`crun: setrlimit RLIMIT_MEMLOCK:
 Operation not permitted`), so container provenance comes from `podman inspect` and
 `/get_server_info`, not from `exec`.
+
+## Umgebungsbefunde des Messlaufs (2026-11-22, verifiziert gegen den laufenden Host)
+
+Diese Sitzung hat zweimal gegen **unterschiedliche Baumzustände** gemessen. Beide Sichten
+sind festgehalten, weil davon Behauptungen in diesem Ordner abhängen.
+
+| Zeit (UTC) | Befund | Kommando |
+|---|---|---|
+| 22:33–23:31 | `$HOME` = `/home/latz` mit `betterbench` 0.6.0 und `sgemll-hyperburst` (3 saubere Repos); Ledger mit 47 Zeilen unter `/srv/edi-repos/tasks/e48-maas-optimierung/artifacts/gpuq/`; `check_arm.py` und `gpuq-runner.py` dort ausführbar; `tools/bbguard/` in `luni-base` vorhanden; `luni-base`-HEAD = `0125a34` | `ls /home/latz/…`, `tail -1 …/ledger.jsonl`, `python3 bin/check_arm.py --arm A`, `git -C luni-base log --oneline -1` |
+| 23:35 | `/home/latz` existiert nicht mehr (`$HOME` = `/home/z000g9hu`, uid 1000, Host `cachyos-x8664` — UID und Hostname waren auch in der ersten Sicht bereits so); `/srv/edi-repos/tasks` fehlt (kein Mount-Eintrag); `luni-base` kennt `docs/perf-2026-11-21/`, `docs/releases/speedy-rc2.md`, `docs/fleet-modelcards.md`, `tools/bbguard/` nicht mehr und hat HEAD `f516a9e` (111 Commits, `0125a34` ist **kein gültiges Objekt**); `docs/perf-2026-11-21/20-BENCH-PLAN.md` enthält fremden Inhalt | `ls`, `findmnt -T`, `git -C … log --oneline -1`, `git cat-file -t 0125a34`, `git status --short` |
+
+**Folge für die Zitierweise.** Alles, was nur aus den verschwundenen Pfaden stammt — die
+47 Ledger-Zeilen (`startup_s` 293 s median, `power_max_w` max 319.7 W), die
+`check_arm.py`-Ausgaben, die 156-*-Pilotakten — gilt hier als **historisch (Quellpfad
+verschwunden)** und muss vor einer Entscheidung neu erzeugt werden. Kein Wert dieses
+Ordners hängt an so einer Zahl. Was die zweite Sicht wieder bestätigt hat, ist die
+Werkzeug-Kette selbst: `uv`-Tool **und** sauberer `v0.6.0`-Checkout melden
+`BetterBench 0.6.0`, die 8 Korpus-Dateien sind bytegleich (`b31e9141…`), die Karte hat
+`ef946cf2…`, die Engine läuft unverändert (`health=200`, `chunked_prefill_size` 8192),
+`power.limit` = 300.00 / `power.default_limit` = 600.00, kein Lease, keine Pending-Jobs.
+Aufgabe `663` klärt Verlust und Wiederherstellung.
 
 ## What this file does not settle
 

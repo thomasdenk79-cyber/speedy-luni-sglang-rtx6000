@@ -120,8 +120,11 @@ Readings:
 
 To produce a row that may sit next to 369.9 / 710.2 at all:
 
-1. BetterBench **0.6.0**, shipped corpus `v1`, hash `b31e9141…a6beed`, pinned config
-   `bench/campaign-20261121.json` (20-BENCH-PLAN).
+1. BetterBench **0.6.0** (pinned source build `d00ad5ec80`, see `00-SOURCE-INVENTORY.md`),
+   shipped corpus `v1`, tool `content_hash` `e332dceff176d033` (file-tree sha256
+   `b31e9141ad5cf1ea29f62612afc528c96649cbb0dd1504926461cfcd75a6beed` — the number
+   `speedy-rc2.md:190` quotes), pinned config `bench/campaign-20261121.json`
+   (20-BENCH-PLAN).
 2. **Public** token maps and the **stock** MTP head — the donor's headline is the public-assets
    number; the private-assets family (420.9 / 423.7) is a different row.
 3. One server start per arm, screen off / no desktop redraw, `max-running-requests` and
@@ -144,3 +147,15 @@ To produce a row that may sit next to 369.9 / 710.2 at all:
 | local artifact corroborates 710.2 | **no** — the only local artifact is an older c1-only build that queues at c=4 (aggregate 310.2, TTFT p50 2.4 s) |
 | donor ran at 350 W | **unsupported**; donor's own notes point to 300/325 W, and no artifact records the cap |
 | local Nov-18 "350 W cap" claim | **unsupported** by Prometheus and by every queue row on this host → follow-up task, see `RESULTS.md` |
+
+## Provenance of sourced values (added by `2026-11-21-speedy-baseline`)
+
+Two classes of evidence are kept apart so nobody reads a historical reading as a measured one:
+
+| Value | Class | How to re-derive |
+|---|---|---|
+| donor table (`2026-10-27.md:128-142`), GitHub states, Apache-2.0 | **donor, author-reported**; repo and commit present | `git -C /srv/community-repos/hyperburst-rtxpro6000 show 8ff73f4169:docs/benchmarks/2026-10-27.md` |
+| local artifact `results/betterbench-1007/results.json` (355.93 / 310.2 / 11802, `greedy=false`, levels 6 and 8 empty) | **local raw artifact, provenance thin** - no launcher script, no version field | the python block in "Conditions to reproduce" |
+| `startup_s` median 293 s, max `power_max_w` 319.7 W, 47 ledger rows | **read historically 2026-11-22 00:1xZ, source path unreachable at publication** - see the availability section in [00-SOURCE-INVENTORY.md](00-SOURCE-INVENTORY.md) | regenerate from a live ledger before use; never an acceptance bound |
+| `350 W` in `docs/releases/speedy-rc2.md:214` | **quoted from a doc readable at 00:1xZ, since gone**; the 300/600 W rebuttal is live-measured from Prometheus | Prometheus query in 00, "GPU and power state"; escalated as task 660 |
+| launch command (`speedy-rc2.md:115-124`), fleet card (`fleet-modelcards.md:101-107`), Nov-21 32k row (`:202`) | **read historically**, same path loss | `podman inspect qwen38-rc2` + `:30000/get_server_info` (both live); recovery via task 663 / sibling 233 |

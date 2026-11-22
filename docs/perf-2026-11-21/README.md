@@ -40,3 +40,14 @@
 | `08-INTEGRATION-ROADMAP.md` | planned; R1 hardware decision open | `2026-11-21-speedy-release-integration` |
 | `09-OPERATOR-TASK-MIGRATION.md` | done | - |
 | [RESULTS.md](RESULTS.md) | ledger open; no campaign run entered | every benchmark task appends; no numbers without raw data |
+
+## Baseline artifacts of task `2026-11-21-speedy-baseline` (docs-only, no run)
+
+| File | Content | Status |
+|---|---|---|
+| [20-BENCH-PLAN.md](20-BENCH-PLAN.md) | pinned BetterBench plan: C1/C2/C4/C6, fixed prompts and sampling, 300 W cap, warmup 3, >=3 repeats, cold-prefill vs long-cached-prefix split, arm definitions, validity gates, abort criteria | ready for owner `gpu_window.py open` |
+| [21-DONOR-RECORD.md](21-DONOR-RECORD.md) | donor record: 369.9 / 710.2 / TTFT 101 ms / 12796 tok/s with field definitions, the unpublished raw artifact, the 350 W conflict, provenance classes | done |
+| [30-RUN-COMMANDS.md](30-RUN-COMMANDS.md) | exact gpuq submit + BetterBench calls, env triple, artifact contract, pre/post commands, no-fly list, token-saving procedure | done |
+| `../bench/campaign-20261121.json` | the pinned BetterBench card (sha256 `ef946cf2...`) | done |
+| `../bench/bb-campaign.sh` | 5-gate runner: window, lease+engine hold, `nvidia-smi -pl 300` read-back, tool/corpus hash, card-echo; per-arm validation incl. C6 | verified against a mock server, not yet against the live engine |
+| `../bench/jobs/*.env` | A/B/C/D + C6-replay job files, template of the live `qwen38-rc2` flags | done |

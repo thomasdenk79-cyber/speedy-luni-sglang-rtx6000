@@ -62,8 +62,8 @@ env -u GIT_INDEX_FILE git -C /srv/community-repos/qwen38-flashnext-nvfp4-kv \
 
 # 2.4 the power cap actually set (0 = unlimited; measured history 600 W until
 #     2026-11-18 14:51 CET, 300 W after, never 350 W — see 21-DONOR-RECORD.md)
-nvidia-smi --query-gpu=power.enforced.power.limit,power.draw,clocks.sm \
-  --format=csv,noheader,nounits
+nvidia-smi --query-gpu=power.limit,power.default_limit,power.draw,clocks.sm \
+  --format=csv,noheader,nounits        # 300.00, 600.00, <draw>, <clocks> (measured 2026-11-22)
 
 # 2.5 the bench tool and its pinned artifacts
 betterbench --version                             # BetterBench 0.6.0
@@ -146,8 +146,8 @@ $Q run --window-only                           # or: the whole staged set, seque
 # 4.4 watch, from a second shell
 $Q status
 tail -f /srv/llm-cache/qwen38-flashnext/logs/gpuq-runner.log 2>/dev/null || true
-nvidia-smi --query-gpu=power.draw,power.enforced.power.limit,temperature.gpu,clocks.sm \
-  --format=csv,noheader,nounits
+nvidia-smi --query-gpu=power.limit,power.draw,temperature.gpu,clocks.sm \
+  --format=csv,noheader,nounits        # power.limit must stay 300.00
 ```
 
 Budget, measured rather than guessed: `startup_s` median 293 s (max 393 s over

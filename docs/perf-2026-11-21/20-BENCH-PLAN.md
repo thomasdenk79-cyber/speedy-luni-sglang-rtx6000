@@ -11,6 +11,7 @@ or the queue, commands in `00-SOURCE-INVENTORY.md`.
 - Pins
 - What each number means (field contract)
 - Power contract
+- Arms and validity gates
 - Warmup, order, repeats
 - Noise gates
 - Feasibility (measured budget)
@@ -22,7 +23,7 @@ or the queue, commands in `00-SOURCE-INVENTORY.md`.
 |---|---|
 | tool | BetterBench **0.6.0** (`__version__ = "0.6.0"`, `RESULTS_SCHEMA = 2`, `CORPUS_VERSION = "1.0"`); campaign runs `/srv/community-repos/BetterBench-wt-v060/.venv/bin/betterbench`. Corroborated by the uv tool at `/home/z000g9hu/.local/bin/betterbench`: identical 13-file `*.py` tree (`b68a6d3d3395b4e2`) |
 | tool source | `/srv/community-repos/BetterBench` @ `v0.6.0` = `d00ad5ec8098c06584a88ec3468bacd37d5ed098`, built into the campaign worktree `/srv/community-repos/BetterBench-wt-v060` (clean checkout of that commit; the source repo's dirty files touch neither `betterbench/`, `corpus/` nor `config/`) |
-| prompts | shipped corpus `v1`: chat 3, code 4, file_edit 3, json 4, math 4, prose 4, reasoning 4, summarization 3 = **29 prompts** in 8 categories; the tool's own `content_hash` over `{category: [ids]}` = **`e332dceff176d033`** (== `env.corpus_hash` of the donor artifact → same prompts as 369.9/710.2), tree `sha256` of the 8 `*.jsonl` = `25609238ea6badaf9551e9b648f54d1c227f9998fc5c3df9e2a1114428a93254`. Passed explicitly as `--corpus /srv/community-repos/BetterBench-wt-v060/corpus/v1` |
+| prompts | shipped corpus `v1`: chat 3, code 4, file_edit 3, json 4, math 4, prose 4, reasoning 4, summarization 3 = **29 prompts** in 8 categories, per-prompt `max_tokens` 120–900; the tool's own `content_hash` over `{category: [ids]}` = **`e332dceff176d033`** (== `env.corpus_hash` of the donor artifact → same prompts as 369.9/710.2; measured 2026-11-22 with `betterbench.corpus.load_corpus` + `betterbench.env.content_hash`), file-tree `sha256` over the 8 `*.jsonl` bytes = `b31e9141ad5cf1ea29f62612afc528c96649cbb0dd1504926461cfcd75a6beed` (reproduce: `find corpus/v1 -name '*.jsonl' | sort | xargs cat | sha256sum`). Passed explicitly as `--corpus /srv/community-repos/BetterBench-wt-v060/corpus/v1` |
 | config | `bench/campaign-20261121.json`, `sha256` = `ef946cf2cd674d08bbc9c2ca2219e282f75873c86b8b6c5d371a874c3dd9a3a9`; loaded through `Config.load()` it differs from the bundled `config/default.json` in exactly three fields: `greedy true`, `seed 20261121`, `concurrency_levels [1,2,4,6]`. `Config.load()` ignores unknown keys silently, so the validator compares every card key against the echoed `config` block |
 | sampling | greedy (`temperature=0`), `seed 20261121`, `top_p 0.95`, `top_k 20`, thinking/reasoning channel left at server default and **recorded per arm** (donor ran thinking on) |
 | passes | `runs_per_category 20`, `warmup 3` per category, `unique_nonce true` |
@@ -89,6 +90,73 @@ The campaign's Nov-18 reference table claims a 350 W cap that this host has neve
 (600 W until 2026-11-18 14:51 CET, 300 W since; two transient 450 W samples on 2026-11-17).
 Until that row's condition is re-measured it is **historical, condition unknown** — see
 `RESULTS.md` and the follow-up task.
+
+## Arms and validity gates
+
+Four arms, each with its own server start, config and label. `sglang_head` is read
+**per arm** from the container's `Label: ai.hyperburst.sglang_head`; the production
+head (`a090492091`, `/get_server_info`) and the git-ref head of the pinned worktree
+`/srv/community-repos/sglang-wt-tagrc2` (`1ad48f14e1`, five commits behind) differ, so
+"rc2" has to be pinned by SHA in every row, not by name.
+
+| Arm | What changes vs production | HiCache env (`name=value`) | Status |
+|---|---|---|---|
+| **A** reference | nothing — production args as they run | `SGLANG_HICACHE_STORAGE_BACKEND=`, `SGLANG_HICACHE_STORAGE_MODE=`, `SGLANG_HICACHE_FILE_BACKEND_MAX_SIZE=` (all empty) | planned |
+| **B** candidate | the fork branch under test | empty | planned |
+| **C** HiCache | HiCache on the file backend | `SGLANG_HICACHE_STORAGE_BACKEND=file`, `SGLANG_HICACHE_STORAGE_MODE=per_page`, `SGLANG_HICACHE_FILE_BACKEND_MAX_SIZE=40G` | planned |
+| **D** prefill | chunk 16384 **and** `max_prefill_tokens` 16384 | empty | planned |
+
+The values in the C row are the campaign's choice, not a fact about the box: the
+**running** engine has none of them set (`podman inspect qwen38-rc2` → the three
+`HiCache` keys are empty, `ChunkedPrefillSize=8192`, `MaxPrefillTokens=8192`,
+`EnableMixedChunk=False`). A launch env saying otherwise is not the truth of a run —
+`bench/bb-campaign.sh` therefore reads `/get_server_info` before and after the pass and
+stores it as `server-info.json`; if it cannot, the run is not publishable.
+
+**The A/B/C run of 2026-11-21 17:46:17Z is invalid as a comparison** (`INVALID ARMS:
+A/B/C cross-arm mixing` in its own ledger row: one server, one start, three arms, one
+pass each; `INVALID: no prefill depth isolation` — the tool ran its fixed depth list and
+the step asked for none; `INVALID: no minimum repeat count`). It also ran with
+`chunked_prefill_size=16384` against an 8192 production contract. Reuse it as context
+only (`21-DONOR-RECORD.md` §5), never as a baseline, and never as a donor comparison.
+
+Gates, all enforced mechanically in `bench/bb-campaign.sh` (rc=1 on any miss, verified
+2026-11-22 with the matrix in `30-RUN-COMMANDS.md` §3.2):
+
+1. every key of the card exists in `betterbench.config.Config.__dataclass_fields__`, and
+   each card value reappears in the `config` block the tool echoes into `results.json` —
+   `Config.load()` drops unknown keys **silently**, so a typo would otherwise look like
+   a measured greedy run while sampling stayed at `temperature 0.7`;
+2. `env.betterbench_version`, `env.corpus_hash`, `env.num_prompts` present and equal to
+   the pins; missing version is a refusal (a 0.5.0 prefill number is the wrong
+   measurement, see the warning above);
+3. the arm note carries `arm=<name>`, and the `name` ends in the arm — this is what makes
+   a ledger row attributable;
+4. `quick` not set, and each level in `concurrency_levels` has a non-empty per-request
+   rate list plus a non-null `aggregate_tps` — level 6 is the one most likely to come
+   back empty, since the donor ran 1/2/4/8 and the queue's parser only maps those four
+   (`flatten_betterbench`, follow-up task 662);
+5. dump completeness: `server-info.json` present, `results.json` parseable, a prefill
+   entry for every requested depth;
+6. power read before and after against the expected cap (measured now: `power.limit`
+   `300.00`, `power.default_limit` `600.00`; `--cap=350` refuses to run).
+
+**One server per arm, runs sequential.** A second server would need another ~95 GiB of
+the 97.9 GiB card, so the queue's `sequential: true` is the only possible shape;
+alternating order (`A B A B A B`) is what the plan asks for and `campaign-20261121.json`
+records it.
+
+**Cold prefill vs cached prefix — two different quantities.** The 8K-chunk run with
+HiCache on re-reads a long prefix that is already resident, which is a *re-use* number;
+the 16k/32k numbers are cold by construction (`prefill_runs` with fresh fillers). The
+script writes the cold reference as its own artifact (`prefill_cold_reference: true`) and
+`RESULTS.md` keeps the two in separate tables; a row that mixes them is a defect, not a
+result.
+
+**Donor caveats to carry into every comparison:** the donor's `4 concurrent total` is
+BetterBench level 4 aggregate, the donor's levels were 1/2/4/8 (no level 6 anywhere),
+and the donor's 32 K prefill row (12,796 tok/s) disagrees with the only raw artifact on
+this host (11,802 `pp_tps_med` at depth 32000) — see `21-DONOR-RECORD.md` §1, §3.
 
 ## Warmup, order, repeats
 
