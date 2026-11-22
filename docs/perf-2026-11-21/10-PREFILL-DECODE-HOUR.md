@@ -85,17 +85,39 @@ for stall diagnostics; tasks 169/190 address **short** chunks, not this cold com
    Promote only with repeatable decode/hour gain at fixed demand, acceptable
    tails, unchanged correctness and no headroom regression.
 
-## KV-Pool-Diagnose (22.11. 01:28Z, live)
+## KV-Pool und Entlastung (korrigiert 22.11., Betreiber-Auftrag)
 
-- `--max-total-tokens 1000000` ist ein Default aus `examples/run-rc2-production.sh`
-  (Zeile 38), kein Hardware-Limit. `mem-fraction-static` 0.94.
-- Bei 8 running / 2 waiting: `full token usage` 0.55–0.72 (~73k tok/Session).
-  Das ist der echte Kontext — inaktive Prefixe liegen per HiCache in RAM
-  (`cache_hit_rate` 0.96 belegt Reload statt Recompute). Kein Fehler.
-- Zweitdeckel: **Mamba-States** (`max_mamba_cache_size=48`, usage 0.48–0.52,
-  `mamba num` 23–25). Hybrid-Modell: pro Sequence mehrere States (Draft/
-  Verify/Checkpoint bei EAGLE t8/topk1) → ~6 Slots/Sequence.
-- Der bindende Engpass fuer Queued-Nachzug ist derzeit `max_running_requests=8`,
-  nicht der KV-Pool. Pool-Erhoehung bringt erst etwas, wenn usage >= 0.9
-  laeuft — dann `MAX_TOTAL_TOKENS` per Env beim naechsten freigegebenen
-  Restart-Fenster anpassen (Hold/Lease beachten).
+- `--max-total-tokens 1000000` war ein **Default-Fehler** im Launch-Skript
+  (`MAX_TOTAL_TOKENS:-1000000`). Korrektur: kein Default mehr — SGLang
+  bestimmt den Pool aus dem freien VRAM; die Flag nur noch in begruendeten
+  A/B-Tests per Env. Der fruehere Wert 949 888 war kein Plan, sondern der
+  alte Automatik-Wert einer anderen Build-Konfiguration — kein
+  "wir waren schon mal besser".
+- Zielgroessen NVFP4-KV: aktuell ~1.25M Tokens erwartet, ~1.5M moeglich,
+  wenn die Draft-Kopf-VRAM-Fragen (HyperBurst) geklaert sind.
+- `mem-fraction-static` 0.94 -> **0.96** als sicherer erster Schritt
+  (Pennyroyal faehrt 0.981; exakte Obergrenze haengt an Chunksize/Kernels —
+  Herantasten, kein Blindflug).
+- Zweitdeckel bleiben: `max_running_requests=8` und Mamba-States
+  (`max_mamba_cache_size=48`, ~6 States/Sequence bei EAGLE/NEXTN t8-topk1).
+
+### Admission-Schutz (Betreiber 22.11.: Prio 1)
+
+Live-Zustand rc2 (22.11. 01:35Z): `min_free_slots_delay=None`,
+`enable_prefill_delayer=False` — beide im Build vorhanden, aber **abgeschaltet**.
+Daher Vorload-Muster: Prefill uebernehmen 6-500+ wartende Requests,
+Decoderate bricht ein, moegliche Preemptions. Karte
+`2026-11-22-rc2-admission-aktivierung` (Prio critical, seq 0):
+Restart-Paket = MEM_FRACTION 0.96 + kein MAX_TOTAL_TOKENS +
+`--min-free-slots-delay 2` + `--enable-prefill-delayer` mit
+`--prefill-delayer-token-usage-low-watermark ~0.85`. Messregel:
+**Mixed-Load-Stabilitaet ist kein Vergleichs-Benchmark** — zulaessig sind
+Gesamt-Server-Stats (Stunde-Durchsatz, Preemptions, Queue) und kurze
+exklusive Cold-Prefill-Samples; vergleichende tok/s-Aussagen nur im
+freigegebenen GPU-Fenster (gpuq-Lease).
+
+### Messdisziplin (Betreiber 22.11.)
+
+Multi-Agenten-Betrieb ist der Normalzustand, kein exklusiver Zugriff.
+Benchmark-Zahlen ohne gpuq-Fenster sind nur als Verlaufs-/Stabilitaetsdaten
+ zitieren, nie als Performance-Aussage.

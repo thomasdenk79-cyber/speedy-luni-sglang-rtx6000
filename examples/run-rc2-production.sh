@@ -30,7 +30,11 @@ TOKEN_MAP="${TOKEN_MAP:-$HERE/tokenmaps/hyudryu_top49152.pt}"
 PORT="${PORT:-30000}"
 NAME="${NAME:-qwen38-rc2}"
 MAX_RUNNING="${MAX_RUNNING:-8}"
-MAX_TOTAL_TOKENS="${MAX_TOTAL_TOKENS:-1000000}"
+# No default on purpose (Betreiber 22.11.): SGLang selbst bestimmt den Pool aus
+# dem freien VRAM. --max-total-tokens nur in begruendeten A/B-Tests per Env
+# setzen (MAX_TOTAL_TOKENS=... ./run-rc2-production.sh), nie als Produktion-Default.
+MAX_TOTAL_TOKENS="${MAX_TOTAL_TOKENS:-}"
+MEM_FRACTION="${MEM_FRACTION:-0.96}"
 CONTEXT_LENGTH="${CONTEXT_LENGTH:-524288}"
 DRY_RUN="${DRY_RUN:-0}"
 
@@ -70,8 +74,8 @@ ARGS=(
   --model-path /models/qwen38 --host 0.0.0.0 --port "$PORT" --enable-metrics
   --dtype bfloat16 --quantization modelopt_fp4 --moe-runner-backend flashinfer_cutlass_sm120_swiglu
   --weight-loader-prefetch-checkpoints --weight-loader-prefetch-num-threads 4 --weight-loader-drop-cache-after-load
-  --kv-cache-dtype nvfp4 --mem-fraction-static 0.94 --page-size 64
-  --context-length "$CONTEXT_LENGTH" --max-total-tokens "$MAX_TOTAL_TOKENS" --json-model-override-args "$ROPE"
+  --kv-cache-dtype nvfp4 --mem-fraction-static "$MEM_FRACTION" --page-size 64
+  --context-length "$CONTEXT_LENGTH" --json-model-override-args "$ROPE"
   --max-running-requests "$MAX_RUNNING" --chunked-prefill-size 8192 --prefill-decode-interval 1
   --mamba-radix-cache-strategy extra_buffer_lazy --mamba-ssm-dtype bfloat16 --max-mamba-cache-size 48
   --hybrid-cache-checkpoints-level 2 --mamba-track-interval 64
@@ -86,6 +90,9 @@ ARGS=(
   --hicache-write-policy write_through --hicache-io-backend kernel --hicache-mem-layout page_first
   --hicache-storage-backend file --hicache-storage-prefetch-policy timeout
 )
+# Max-Total-Tokens nur bei ausdruecklicher Setzung (A/B-Tests) — sonst
+# bestimmt SGLang die Poolgroesse aus dem verfuegbaren VRAM.
+if [[ -n $MAX_TOTAL_TOKENS ]]; then ARGS+=(--max-total-tokens "$MAX_TOTAL_TOKENS"); fi
 
 CMD=("$CONTAINER_CLI" run -d --name "$NAME" --restart unless-stopped $GPU_ARGS
   --network host --ipc host --ulimit memlock=-1:-1 --user 0:0
