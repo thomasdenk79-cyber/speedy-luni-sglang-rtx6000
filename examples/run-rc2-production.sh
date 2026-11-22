@@ -11,8 +11,8 @@
 #
 # DRY_RUN=1 prints the command and exits. Host needs: NVIDIA driver with CDI
 # (podman: --device nvidia.com/gpu=all; docker: GPU_ARGS="--gpus all"),
-# ~40 GB free host RAM (pinned PLE table + HiCache buffer), and a fast NVMe for
-# the HiCache file tier (HICACHE_MAX, default 200G).
+# enough free host RAM for the pinned PLE table plus the 10 GB HiCache buffer,
+# and a fast NVMe for the HiCache file tier (HICACHE_MAX, default 200G).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,6 +30,8 @@ TOKEN_MAP="${TOKEN_MAP:-$HERE/tokenmaps/hyudryu_top49152.pt}"
 PORT="${PORT:-30000}"
 NAME="${NAME:-qwen38-rc2}"
 MAX_RUNNING="${MAX_RUNNING:-8}"
+HICACHE_PREFETCH_POLICY="${HICACHE_PREFETCH_POLICY:-wait_complete}"
+HICACHE_SIZE="${HICACHE_SIZE:-10}"
 # No default on purpose (Betreiber 22.11.): SGLang selbst bestimmt den Pool aus
 # dem freien VRAM. --max-total-tokens nur in begruendeten A/B-Tests per Env
 # setzen (MAX_TOTAL_TOKENS=... ./run-rc2-production.sh), nie als Produktion-Default.
@@ -37,6 +39,11 @@ MAX_TOTAL_TOKENS="${MAX_TOTAL_TOKENS:-}"
 MEM_FRACTION="${MEM_FRACTION:-0.96}"
 CONTEXT_LENGTH="${CONTEXT_LENGTH:-524288}"
 DRY_RUN="${DRY_RUN:-0}"
+
+case "$HICACHE_PREFETCH_POLICY" in
+  best_effort|wait_complete|timeout) ;;
+  *) echo "HICACHE_PREFETCH_POLICY must be best_effort|wait_complete|timeout" >&2; exit 2 ;;
+esac
 
 for p in "$SRC_DIR/python/sglang" "$MODEL_DIR" "$ADAPTIVE_CONFIG" "$TOKEN_MAP"; do
   [[ -e $p || $DRY_RUN == 1 ]] || { echo "missing: $p" >&2; exit 2; }
@@ -86,9 +93,9 @@ ARGS=(
   --speculative-algorithm NEXTN --speculative-eagle-topk 1 --speculative-num-steps 7 --speculative-num-draft-tokens 8
   --speculative-draft-kv-cache-dtype fp8_e4m3 --speculative-draft-model-quantization unquant
   --speculative-adaptive --speculative-adaptive-config /config/adaptive.json --speculative-token-map /config/token_map.pt
-  --enable-hierarchical-cache --hicache-host-memory-mode buffer_only --hicache-size 4
+  --enable-hierarchical-cache --hicache-host-memory-mode buffer_only --hicache-size "$HICACHE_SIZE"
   --hicache-write-policy write_through --hicache-io-backend kernel --hicache-mem-layout page_first
-  --hicache-storage-backend file --hicache-storage-prefetch-policy timeout
+  --hicache-storage-backend file --hicache-storage-prefetch-policy "$HICACHE_PREFETCH_POLICY"
 )
 # Max-Total-Tokens nur bei ausdruecklicher Setzung (A/B-Tests) — sonst
 # bestimmt SGLang die Poolgroesse aus dem verfuegbaren VRAM.
