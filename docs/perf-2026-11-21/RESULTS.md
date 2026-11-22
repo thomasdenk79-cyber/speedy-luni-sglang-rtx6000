@@ -12,8 +12,8 @@ or prompt payloads. Missing evidence means HOLD, not a zero delta.
 
 ## Baseline reference rows (task `2026-11-21-speedy-baseline`, 2026-11-22)
 
-No local campaign number exists: the operator had no GPU lease (`bin/gpu_window.py status` ->
-rc=1) and the owner approval `engine-hold-lift-rc2-2026-11-21` assigns `gpuq add/run` to the
+No local campaign number exists: the operator had no GPU lease (`bin/gpu_window.py active` ->
+rc=1, `status` prints `no gpu window`) and the owner approval `engine-hold-lift-rc2-2026-11-21` assigns `gpuq add/run` to the
 owner, so no arm was measured. Rows below are **reference points only**; a future run replaces
 them, it does not edit them.
 

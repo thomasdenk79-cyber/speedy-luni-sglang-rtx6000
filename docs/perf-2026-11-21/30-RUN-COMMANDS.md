@@ -11,8 +11,9 @@ Everything here runs on t15. **Two hard rules decide who types what:**
    (`engine-hold-lift-rc2-2026-11-21` in `TASKS/APPROVALS.md`) says
    *GPU frei, kein Lease, keine gpuq-Runner*, so **no run was made here**; §1–§4
    are staged, tested and ready for the owner's window.
-2. There is **no agent-held GPU lease**: `state/gpu-window/lease.json` is absent
-   and `bin/gpu_window.py status` returns rc=1 (`no gpu window`). A baseline
+2. There is **no agent-held GPU lease**: `state/gpu-window/lease.json` is absent and
+   `bin/gpu_window.py active` returns rc=1 (no live lease); `status` prints `no gpu window`
+   (note: `status` always exits 0, so the **go/no-go signal is `active`**, not `status`). A baseline
    number produced outside the queue and the window is not a baseline.
 
 ## Contents
