@@ -84,3 +84,18 @@ for stall diagnostics; tasks 169/190 address **short** chunks, not this cold com
    decode, so improved ITL can cost speculative throughput. Verify actual route.
    Promote only with repeatable decode/hour gain at fixed demand, acceptable
    tails, unchanged correctness and no headroom regression.
+
+## KV-Pool-Diagnose (22.11. 01:28Z, live)
+
+- `--max-total-tokens 1000000` ist ein Default aus `examples/run-rc2-production.sh`
+  (Zeile 38), kein Hardware-Limit. `mem-fraction-static` 0.94.
+- Bei 8 running / 2 waiting: `full token usage` 0.55–0.72 (~73k tok/Session).
+  Das ist der echte Kontext — inaktive Prefixe liegen per HiCache in RAM
+  (`cache_hit_rate` 0.96 belegt Reload statt Recompute). Kein Fehler.
+- Zweitdeckel: **Mamba-States** (`max_mamba_cache_size=48`, usage 0.48–0.52,
+  `mamba num` 23–25). Hybrid-Modell: pro Sequence mehrere States (Draft/
+  Verify/Checkpoint bei EAGLE t8/topk1) → ~6 Slots/Sequence.
+- Der bindende Engpass fuer Queued-Nachzug ist derzeit `max_running_requests=8`,
+  nicht der KV-Pool. Pool-Erhoehung bringt erst etwas, wenn usage >= 0.9
+  laeuft — dann `MAX_TOTAL_TOKENS` per Env beim naechsten freigegebenen
+  Restart-Fenster anpassen (Hold/Lease beachten).
