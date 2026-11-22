@@ -33,6 +33,7 @@
 | `01-UPSTREAM-AND-FORK-DIFF.md` | open | `2026-11-21-speedy-baseline` |
 | `02-PATCH-PORT-MATRIX.md` | started (PR states verified) | all port tasks update their row |
 | `03-NVFP4-KERNEL-COMPARISON.md` | open | `2026-11-21-speedy-nvfp4-flashinfer` |
+| `11-MIXED-SPEC-SPIKES.md` | open (Spike done, Option-A-Prototyp laeuft) | `2026-11-22-speedy-mixed-spec-spike` |
 | `04-HICACHE-NIXL-AUDIT.md` | open | `2026-11-21-hicache-nonblocking-audit`, `2026-11-21-speedy-hicache-nixl-ab` |
 | `05-GPU-RESIDENT-SCHEDULER-DESIGN.md` | open | `2026-11-21-sched-tier-admission` |
 | `06-BENCHMARK-PLAN.md` | open | `2026-11-21-speedy-agentload-c1-c10` |

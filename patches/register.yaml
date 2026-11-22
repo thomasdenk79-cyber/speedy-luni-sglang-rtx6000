@@ -1926,18 +1926,3 @@ patches:
   release: pending:perf/hb-prune-pdl
   origin: OWN
   prs: ''
-- 'no': 215
-  subject: '[Fix] mem_cache: Clamp the buffer_only anchor-lock cap by the model context length (#50236)'
-  status: new
-  gpu_validated: pending
-  upstream: upstream-open
-  note: 'rc2 already carries the clamp (buffer_mode/pipeline.py:334) and the clamp
-    test; this port is the remaining PR delta (unset --context-length falls back to
-    req_to_token pool width, kit fixture_headroom switch, cap assertion). Live rc2
-    math: device pool 1000000, --context-length 524288, cap 0.5 -> anchor_lock_cap_tokens
-    475712 (not 500000). Test file is GPU-class: CPU lane fails 289/348 at
-    SRTPlatform.get_device before and after, so no CPU behaviour proof. Branch
-    fix/port-50236 commit 50c8cc44ce, upstream head 3c8f062214 OPEN.'
-  release: pending:fix/port-50236
-  origin: BACKPORT
-  prs: '#50236'
