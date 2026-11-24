@@ -61,41 +61,55 @@ def make_plan(round_id):
     return [(phase, stage, prompt) for phase, domain, task in plan for stage, prompt in ticket(domain, round_id, task)]
 
 
+def post(url, path, data):
+    request = urllib.request.Request(url + path, json.dumps(data).encode(), {"Content-Type": "application/json"})
+    return urllib.request.urlopen(request, timeout=180)
+
+
 def generate(url, prompt):
-    data = {"text": prompt, "stream": True, "sampling_params": {"temperature": 0, "max_new_tokens": 256}}
-    request = urllib.request.Request(url + "/generate", json.dumps(data).encode(), {"Content-Type": "application/json"})
+    # Apply the server's chat template; raw /generate text may stop at prefill.
+    # Tokenization is outside the request timer and does not populate the KV cache.
+    with post(url, "/tokenize", {"model": "flash-next", "messages": [{"role": "user", "content": prompt}]}) as response:
+        token_ids = json.load(response)["tokens"]
+    data = {"input_ids": token_ids, "stream": True, "sampling_params": {"temperature": 0, "max_new_tokens": 256}}
     begin = time.monotonic()
     first = None
     meta = {}
-    with urllib.request.urlopen(request, timeout=180) as response:
+    done = False
+    with post(url, "/generate", data) as response:
         for line in response:
             if not line.startswith(b"data: "):
                 continue
             data = line[6:].strip()
             if data == b"[DONE]":
+                done = True
                 break
             event = json.loads(data)
             if "error" in event:
                 raise RuntimeError(event["error"])
-            if first is None and event.get("text"):
+            if first is None and event.get("output_ids"):
                 first = time.monotonic()
             meta = event.get("meta_info", meta)
     end = time.monotonic()
-    for key in ("completion_tokens", "prompt_tokens", "cached_tokens", "spec_verify_ct", "spec_num_correct_drafts"):
+    if not done or not meta.get("finish_reason") or meta["finish_reason"].get("type") == "abort":
+        raise RuntimeError("generation did not finish normally")
+    for key in ("completion_tokens", "prompt_tokens", "cached_tokens"):
         if key not in meta:
             raise RuntimeError(f"missing donor metric: {key}")
-    if first is None or meta["spec_verify_ct"] == 0:
-        raise RuntimeError("no generated text or no draft verification")
+    steps = meta.get("spec_verify_ct", 0)
+    drafts = meta.get("spec_num_correct_drafts")
+    if drafts is None and (steps or meta["completion_tokens"] > 1):
+        raise RuntimeError(f"missing draft counters with {meta['completion_tokens']} generated tokens")
     return {
         "prompt_tokens": meta["prompt_tokens"], "cached_tokens": meta["cached_tokens"],
-        "completion_tokens": meta["completion_tokens"], "verify_steps": meta["spec_verify_ct"],
-        "accepted_draft_tokens": meta["spec_num_correct_drafts"], "ttft_s": first - begin,
+        "completion_tokens": meta["completion_tokens"], "verify_steps": steps,
+        "accepted_draft_tokens": drafts or 0, "ttft_s": first - begin if first is not None else None,
         "wall_s": end - begin, "completion_tps": meta["completion_tokens"] / (end - begin),
     }
 
 
 def min_med_max(xs):
-    return [min(xs), statistics.median(xs), max(xs)]
+    return [min(xs), statistics.median(xs), max(xs)] if xs else None
 
 
 def summarize(rows):
@@ -105,9 +119,10 @@ def summarize(rows):
     return {
         phase: {
             "requests": len(rr),
-            "accepted_draft_tokens_per_verify": sum(r["accepted_draft_tokens"] for r in rr) / sum(r["verify_steps"] for r in rr),
-            "accepted_drafts_per_verify_min_med_max": min_med_max([r["accepted_draft_tokens"] / r["verify_steps"] for r in rr]),
-            "ttft_s_min_med_max": min_med_max([r["ttft_s"] for r in rr]),
+            "requests_with_verification": sum(r["verify_steps"] > 0 for r in rr),
+            "accepted_draft_tokens_per_verify": sum(r["accepted_draft_tokens"] for r in rr) / steps if (steps := sum(r["verify_steps"] for r in rr)) else None,
+            "accepted_drafts_per_verify_min_med_max": min_med_max([r["accepted_draft_tokens"] / r["verify_steps"] for r in rr if r["verify_steps"]]),
+            "ttft_s_min_med_max": min_med_max([r["ttft_s"] for r in rr if r["ttft_s"] is not None]),
             "completion_tps_min_med_max": min_med_max([r["completion_tps"] for r in rr]),
             "kv_cached_ratio": sum(r["cached_tokens"] for r in rr) / sum(r["prompt_tokens"] for r in rr),
             "first_turn_cached_tokens": [r["cached_tokens"] for r in rr if r["stage"] == "inspect"],
