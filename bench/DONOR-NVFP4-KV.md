@@ -70,3 +70,13 @@ Ramp levels have 4-14 requests each; too few for a verdict.
 - `/srv/llm-cache/qwen38-flashnext/ab-night/donor-nvfp4-20261124T185149Z/` (`kv4/`, `matched-load/`, `plan.json`, `logs/`).
 - FP8 load baseline: `/srv/llm-cache/qwen38-flashnext/ab-night/donor-fifo8-load-20261124T180815Z/`.
 - Failed starts: `donor-nvfp4-20261124T173445Z` (ready timeout during forced MoE JIT rebuild), `donor-nvfp4-20261124T183842Z` (graph-capture H2D scale, fixed by `13b8c13`).
+
+## Arm 2: FP8 scratch + split-K
+`SGLANG_QSA_NVFP4_SCRATCH=fp8`, `SGLANG_OPT_TRITON_DECODE_ATTN=1`; everything else as arm 1. Evidence `donor-nvfp4-fp8scratch-20261124T203652Z/`.
+
+- Split-K never ran on decode: with MTP every decode step is a verify (`rows 16 != batch 1`), so it falls back to TRT-LLM on the FP8 scratch. The split-K switch is a no-op with speculative decoding.
+- Cold prefill recovered to FP8-KV level: 14,858 / 15,110 / 15,562 / 15,634 tok/s at 8k/16k/32k/64k (bf16 scratch: 11,904 / 13,222 / 14,380 / 14,944).
+- BetterBench vs arm 1: c1-c8 -0.4 to -3.4 % (c3 -3.4 %, c4 -2.7 %); BB prefill +0.5 to +1.3 %.
+- Accuracy GSM8K 96.8 %, MMLU 84.8 % (arm 1: 97.2 / 86.8; FP8 KV: 97.6 / 85.2).
+- Agent sim (matched context): tool TTFT p50 0.739 s, decode 387 tok/s; refill decode 312 vs 380 tok/s in arm 1.
+- Verdict: FP8 scratch fixes prefill but costs decode; candidate split is FP8 scratch for prefill and BF16 or Cake for decode.
