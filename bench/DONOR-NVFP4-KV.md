@@ -80,3 +80,13 @@ Ramp levels have 4-14 requests each; too few for a verdict.
 - Accuracy GSM8K 96.8 %, MMLU 84.8 % (arm 1: 97.2 / 86.8; FP8 KV: 97.6 / 85.2).
 - Agent sim (matched context): tool TTFT p50 0.739 s, decode 387 tok/s; refill decode 312 vs 380 tok/s in arm 1.
 - Verdict: FP8 scratch fixes prefill but costs decode; candidate split is FP8 scratch for prefill and BF16 or Cake for decode.
+
+## Arm 3: Cake decode (bf16 scratch)
+`SGLANG_QSA_NVFP4_DECODE=cake`, `SGLANG_QSA_CAKE_PATH=/tmp/opencode/cake-qsa-sm120`; scratch bf16, split-K off. Evidence `donor-nvfp4-cake-20261124T215135Z/`.
+
+- Cake active for decode, MTP verify and draft rows (no skip warning logged).
+- BetterBench vs arm 1: +0.8 to +2.4 % at every level (c1 329.4, c4 651.8, c8 789.1); vs FP8 KV c1-c4 -1.5 to -2.3 %, c5-c8 +0.2 to +1.5 %.
+- Cold prefill 14,885 / 15,100 / 15,408 / 15,517 tok/s (8k-64k) with **bf16** scratch. Cake does not touch prefill, so the arm-1 cold-prefill deficit was most likely a first-run artifact, not the bf16 dequant. The arm-2 "prefill fix" is therefore unproven; rerun arm 1 cold prefill before drawing conclusions.
+- Accuracy GSM8K 96.4 %, MMLU 86.4 %.
+- Agent sim (matched): tool 0.825 s / 358 tok/s, refill 3.384 s / 399 tok/s, compact 0.988 s / 428 tok/s.
+- Verdict: best NVFP4 arm so far; default candidate is Cake decode + bf16 scratch.
