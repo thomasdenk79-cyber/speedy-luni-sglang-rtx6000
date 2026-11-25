@@ -14,6 +14,7 @@ plus its own.
 - [Why speedy](#why-speedy)
 - [Where it comes from](#where-it-comes-from)
 - [Proof](#proof)
+- [Proof: donor A/B night — NVFP4 KV, Cake, SM120](#proof-donor-ab-night--nvfp4-kv-cake-sm120)
 - [Quick start](#quick-start)
 - [Repository layout](#repository-layout)
 - [Credits and license](#credits-and-license)
@@ -115,6 +116,30 @@ per level. **Real:** Prometheus, 30 h of coding agents ending 2026-11-19 06:05 C
 </p>
 
 Full numbers, comparison and known limitations: [docs/releases/speedy-rc2.md](docs/releases/speedy-rc2.md).
+
+## Proof: donor A/B night — NVFP4 KV, Cake, SM120
+
+A separate A/B night on the **HyperBurst donor baseline** (FIFO/FP8, lab config, one change per run,
+full benchmark set each time) qualified a new best configuration:
+
+| Config | c1 | c4 | c8 | KV capacity | GSM8K / MMLU |
+|---|---:|---:|---:|---:|---|
+| Donor FP8 | 334 | 667 | 777 | 509,760 | – |
+| NVFP4 KV | 320 | 632 | 767 | 866,496 | 96.4 / 86.8 |
+| + Cake decode | 329 | 652 | 789 | 866,496 | 96.4 / 86.4 |
+| **+ SM120 fused MoE SwiGLU** | **347** | **694** | **825** | **866,496** | **96.8 / 87.2** |
+
+- **+70 % KV capacity** at equal or better speed: the default candidate is now NVFP4 KV + Cake +
+  SM120 SwiGLU (with `SGLANG_FLASHINFER_MOE_FUSED_FINALIZE=0`). All three features are switches,
+  off by default; the donor path is unchanged when they are not set.
+- A control arm (Cake + `FUSED_FINALIZE=0`, no SM120) isolates the kernel: disabling fused finalize
+  alone costs 1–5 %, the fused SM120 kernel recovers +5.6–10.5 % over that control.
+- Cold prefill (8K–64K, unique prefixes) is unchanged at 14.9–15.5K tok/s; accuracy is within noise.
+- Decode profile: `_w8a16_gemv_kernel` 27–37 % and the new SM120 MoE kernel 22–37 % of GPU time —
+  those are the next optimisation targets, not a regression.
+
+Full evidence, per-switch deltas and profiling: [bench/DONOR-NVFP4-KV.md](bench/DONOR-NVFP4-KV.md)
+and [bench/DONOR-NVFP4-PROFILE.md](bench/DONOR-NVFP4-PROFILE.md).
 
 ## Quick start
 
