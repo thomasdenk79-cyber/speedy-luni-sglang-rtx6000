@@ -1,5 +1,7 @@
 # Overall review 2026-11-25 — NVFP4/SM120 base, patch plan
 
+> **Owner-direction update (2026-11-25):** For future work, follow [24 — Upstream-first SM120 / NVFP4 handover](24-UPSTREAM-FIRST-SM120-HANDOVER-2026-11-25.md). The donor remains the frozen LKG, official upstream becomes the intended next main engine, P0.2/P0.2b are diagnostic only, and native NVFP4 plus controlled tokenmap ablations take precedence. The measured historical results below remain unchanged. GPU/operator approvals still apply.
+
 ## Contents
 1. Scope and priority
 2. Corrected interpretation of the dense-NVFP4 arm
