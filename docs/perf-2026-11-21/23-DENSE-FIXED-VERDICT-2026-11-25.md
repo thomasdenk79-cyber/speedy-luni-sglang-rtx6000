@@ -93,4 +93,27 @@ of the gap:
 **Trade-off:** KV capacity 947392 → 763392 (−19 % vs control, −12 % vs FP8
 baseline). The +9.3 % KV benefit of the dense arm is consumed by the ~1 GB FP8
 weight cache. This is the explicit speed-over-VRAM decision; both switches
-stay off by default. Full benchmark qualification is running.
+stay off by default.
+
+Full qualification `donor-nvfp4-dense-fp8cache-full-20261125T100830Z` reached
+`qualified` (39 artifacts, no fallback) and reproduced the screen numbers
+(8/16/32/64K = 14437/14561/14777/14791 tok/s). Operator verdict: **not a
+breakthrough** — ~4 % slower than the FP8 baseline in prefill and ~12 % down in
+KV capacity. Do not ship as an improvement.
+
+## Next lever: P0.2c native NVFP4
+
+The -19 % is a format-conversion problem, so the fix is to stop converting the
+weight. SGLang already has the path (`modelopt_quant.py:2147-2175`):
+`fp4_quantize` for activations + FlashInfer `mm_fp4` on the packed FP4 weight,
+with `alpha` folding both global scales. On SM120 / CUDA 13, `mm_fp4`
+`backend="auto"` selects `b12x` (CUTLASS fallback for ragged K); sglang's
+`fp4_gemm` wrapper is avoided because its global config selects the SM100-only
+`cute-dsl` kernel on a 12.x GPU.
+
+P0.2c (`SGLANG_NVFP4_DENSE_PREFILL_NATIVE_FP4`, off by default) keeps the
+**same** packed FP4 weight for decode GEMV and prefill GEMM. Only the small
+block scales get a second 128x4-swizzled copy at load time via
+`block_scale_interleave`; extra VRAM is ~K/16 bytes per row, not a second
+weight. No dequant, no FP8 copy, no host sync. Commits: feature `3d8cc98`,
+run worktree `e5d63e6`, snapshot `f8b4dbe`. Screen pending.
