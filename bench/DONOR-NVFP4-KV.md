@@ -109,3 +109,21 @@ Evidence `donor-nvfp4-bf16-rerun-20261125T000514Z/`. Same engine as arm 1.
 - Accuracy GSM8K 96.8 %, MMLU 87.2 %.
 - Agent sim (matched): tool 0.727 s / 364 tok/s, refill 3.338 s / 467 tok/s, compact 0.916 s / 401 tok/s.
 - Confounder: `FUSED_FINALIZE=0` is also on; the control arm (Cake + `FUSED_FINALIZE=0`, no SM120) is running.
+
+## Arm 5: control, Cake + FUSED_FINALIZE=0 without SM120
+Evidence `donor-nvfp4-cake-nofinalize-20261125T025544Z/`, engine `f9bf31a`.
+
+| c | Cake | Cake + no finalize | Cake + SM120 (no finalize) | SM120 vs control |
+|---:|---:|---:|---:|---:|
+| 1 | 329.4 | 313.5 | 346.5 | +10.5 % |
+| 2 | 482.9 | 464.4 | 508.1 | +9.4 % |
+| 3 | 577.6 | 561.2 | 614.2 | +9.4 % |
+| 4 | 651.8 | 635.2 | 694.2 | +9.3 % |
+| 5 | 668.5 | 657.2 | 701.1 | +6.7 % |
+| 6 | 712.2 | 698.7 | 743.0 | +6.3 % |
+| 7 | 748.9 | 738.2 | 791.2 | +7.2 % |
+| 8 | 789.1 | 780.9 | 824.8 | +5.6 % |
+
+- Disabling fused finalize alone costs 1-5 %; the SM120 kernel more than recovers it: net +4.3 to +6.5 % over Cake.
+- Accuracy control GSM8K 96.4 %, MMLU 87.2 % (SM120: 96.8 / 87.2).
+- New default candidate: NVFP4 KV + Cake + SM120 SwiGLU (`FUSED_FINALIZE=0`).
