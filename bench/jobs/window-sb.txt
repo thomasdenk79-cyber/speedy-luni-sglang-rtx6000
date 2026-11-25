@@ -1,5 +1,5 @@
-docs/perf-2026-11-21/bench/jobs/arm-a-rc2-r1.env
-docs/perf-2026-11-21/bench/jobs/arm-a-rc2-r2.env
-docs/perf-2026-11-21/bench/jobs/arm-a-rc2-r3.env
-docs/perf-2026-11-21/bench/jobs/arm-b-cand-r1.env
-docs/perf-2026-11-21/bench/jobs/arm-c-chunk16k-r1.env
+bench/jobs/arm-a-rc2-r1.env
+bench/jobs/arm-a-rc2-r2.env
+bench/jobs/arm-a-rc2-r3.env
+bench/jobs/arm-b-cand-r1.env
+bench/jobs/arm-c-chunk16k-r1.env

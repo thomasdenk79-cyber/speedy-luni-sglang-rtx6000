@@ -84,8 +84,15 @@ definiert, nicht nach alten tok/s-Werten.
 sauberer `v0.6.0`-Checkout melden `BetterBench 0.6.0`, die acht Korpus-Dateien sind
 bytegleich (`b31e9141…`), `content_hash` = `e332dceff176d033` (Spender-Identität), Karte
 `ef946cf2…`, Engine unverändert (`/health` 200, `chunked_prefill_size` 8192,
-`max_prefill_tokens` 8192, `enable_mixed_chunk` False), `power.limit` 300.00 /
+`max_prefill_tokens` 16384, `enable_mixed_chunk` False), `power.limit` 300.00 /
 `power.default_limit` 600.00, kein Lease, keine Pending-Jobs.
+
+Korrektur 2026-11-22 02:35 CET (Bruna, Testphase): hier stand `max_prefill_tokens` 8192 —
+widerlegt. Die Tabelle oben (Zeile 42) und die Live-Abfrage `curl -s
+http://127.0.0.1:30000/get_server_info` sagen 16384; der Container wurde seither nicht
+neu gestartet (`podman inspect qwen38-rc2 --format '{{.State.StartedAt}}'` =
+2026-11-21 19:31:55 +0100, also vor beiden Abfragen). `context_length` ist 524288, nicht
+262144. Die Zahl war ein Abschreibfehler aus `chunked_prefill_size`, kein Messwert.
 
 | corpus layout | wheel force-include copies repo-root `corpus/` → `betterbench/corpus/` (pyproject `[tool.hatch.build.targets.wheel.force-include]`); `corpus_search_paths()` falls back to the source tree for editable installs. The campaign passes `--corpus` explicitly so no search-path accident can change the prompts |
 | bundled config | `config/default.json` (= `config/default.json` in the repo, echoed into `results.json["config"]`) — `temperature 0.7`, `top_p 0.95`, `top_k 20`, `greedy false`, `warmup 3`, `runs_per_category 20`, `unique_nonce true`, `concurrency_levels [1,2,4,8]`, `concurrency_requests 48`, `prefill_depths [2000,8000,16000,32000,64000]`, `prefill_runs 8`, `prefill_warmup 2`, `prefill_max_tokens 16`, `prefill_ctx_margin 256`, `conf 0.95`, `target_mde_pct 1.0`, `ab_max_pairs 200`, `ab_min_pairs 12`, `timeout_s 600` |

@@ -108,7 +108,7 @@ head (`a090492091`, `/get_server_info`) and the git-ref head of the pinned workt
 
 The values in the C row are the campaign's choice, not a fact about the box: the
 **running** engine has none of them set (`podman inspect qwen38-rc2` → the three
-`HiCache` keys are empty, `ChunkedPrefillSize=8192`, `MaxPrefillTokens=8192`,
+`HiCache` keys are empty, `ChunkedPrefillSize=8192`, `MaxPrefillTokens=16384`,
 `EnableMixedChunk=False`). A launch env saying otherwise is not the truth of a run —
 `bench/bb-campaign.sh` therefore reads `/get_server_info` before and after the pass and
 stores it as `server-info.json`; if it cannot, the run is not publishable.
@@ -120,16 +120,30 @@ the step asked for none; `INVALID: no minimum repeat count`). It also ran with
 `chunked_prefill_size=16384` against an 8192 production contract. Reuse it as context
 only (`21-DONOR-RECORD.md` §5), never as a baseline, and never as a donor comparison.
 
-Gates, all enforced mechanically in `bench/bb-campaign.sh` (rc=1 on any miss, verified
-2026-11-22 with the matrix in `30-RUN-COMMANDS.md` §3.2):
+Gates, all enforced mechanically in `bench/bb-campaign.sh` (rc=1 on any miss). Each is
+proven to fire by the executable matrix `bench/test-guards.sh` (21 cases: one happy path
+plus 20 injected faults, each asserting exit code **and** the FAIL text; run it with
+`bench/test-guards.sh --keep --out <dir>`, see `30-RUN-COMMANDS.md` §3.3):
 
+0. tool pin: `betterbench --version` contains `0.6.0` **and** the module the validator
+   imports resolves inside the pinned tree (`betterbench.__file__` under
+   `/srv/community-repos/BetterBench-wt-v060`). The version line alone is one string a
+   wrapper can print and a second install can match; the module path cannot. Measured
+   2026-11-22: a `PYTHONPATH` stand-in that prints `BetterBench 0.6.0` is refused with
+   `tool pin: betterbench module is ..., not the pinned tree`;
 1. every key of the card exists in `betterbench.config.Config.__dataclass_fields__`, and
    each card value reappears in the `config` block the tool echoes into `results.json` —
    `Config.load()` drops unknown keys **silently**, so a typo would otherwise look like
    a measured greedy run while sampling stayed at `temperature 0.7`;
-2. `env.betterbench_version`, `env.corpus_hash`, `env.num_prompts` present and equal to
-   the pins; missing version is a refusal (a 0.5.0 prefill number is the wrong
-   measurement, see the warning above);
+2. `betterbench_version` (top level, read through the queue's own parser) and
+   `corpus_version` are present — an unversioned artifact is not comparable, and a 0.5.0
+   prefill number is the wrong measurement (see the warning above);
+2a. `env.corpus_hash` equals the pinned `e332dceff176d033`, the value the tool itself
+   computes as `content_hash({category: [prompt ids]})` (`cli.py:185`) — measured equal to
+   the donor's `env.corpus_hash`;
+2b. the three phases `{single_stream, prefill, concurrency}` all reported, `quick` unset,
+   and the attribution notes `arm`/`repeat`/`job` non-empty (an artifact that cannot be
+   traced to an arm cannot enter the ledger);
 3. the arm note carries `arm=<name>`, and the `name` ends in the arm — this is what makes
    a ledger row attributable;
 4. `quick` not set, and each level in `concurrency_levels` has a non-empty per-request

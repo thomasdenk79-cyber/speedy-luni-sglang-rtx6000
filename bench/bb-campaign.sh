@@ -22,7 +22,7 @@
 #   power   the enforced cap is asserted before the run; a mismatch aborts
 #
 # Called by gpuq as:
-#   custom:/srv/community-repos/speedy-luni-sglang-rtx6000/docs/perf-2026-11-21/bench/bb-campaign.sh:--arm=arm-a-rc2:--cap=300:--repeat=1
+#   custom:/srv/community-repos/speedy-luni-sglang-rtx6000/bench/bb-campaign.sh:--arm=arm-a-rc2:--cap=300:--repeat=1
 # gpuq exports GPUQ_URL, GPUQ_OUT, GPUQ_NAME, GPUQ_MODEL, GPUQ_CONTAINER,
 # GPUQ_SGLANG_SRC, GPUQ_SGLANG_IMAGE and the step inherits the runner's PATH.
 #
@@ -37,7 +37,12 @@ set -uo pipefail
 : "${GPUQ_URL:?GPUQ_URL not set (gpuq exports it)}"
 : "${GPUQ_OUT:?GPUQ_OUT not set (gpuq exports it)}"
 
-CFG_SRC="/srv/community-repos/speedy-luni-sglang-rtx6000/docs/perf-2026-11-21/bench/campaign-20261121.json"
+# Self-locating on purpose: the card sits beside this script in bench/.  An
+# absolute path stood here and pointed at docs/perf-2026-11-21/bench/, a tree
+# that never existed in git - the step then died at gate 1 ("pinned config
+# missing") before it could touch the engine.  Measured 2026-11-22.
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CFG_SRC="${HERE}/campaign-20261121.json"
 CFG_SHA="ef946cf2cd674d08bbc9c2ca2219e282f75873c86b8b6c5d371a874c3dd9a3a9"
 
 ARM="unknown-arm"
@@ -55,9 +60,15 @@ done
 fail() { echo "[bb-campaign] FAIL: $*" >&2; exit 1; }
 
 # The tool is pinned to a source build, not to whatever `betterbench` the
-# interactive user happens to have in ~/.local/bin: two installs on this host
-# both reported "0.6.0" while their module layout differed (env.load_category vs
-# corpus.load_corpus), so the version string alone does not identify the code.
+# interactive user happens to have in ~/.local/bin. Measured 2026-11-22 the two
+# installs on THIS account are the same code: all 13 betterbench/*.py of the uv
+# tool env (~/.local/share/uv/tools/betterbench/lib/python3.12/site-packages) are
+# sha256-identical to the pinned tree, only the launcher differs (4ccd7c39… vs
+# 22ffad0b…). An older install under /home/latz did differ (it carried
+# `load_category` in env.py and had no corpus.py — see 00-SOURCE-INVENTORY.md) and
+# vanished with that account; both facts point the same way: the printed "0.6.0"
+# does not identify the code. Only a git object does, so the pin is tag `v0.6.0`
+# = d00ad5ec…, and the step names the interpreter it used in its own log.
 # Resolution order: $BB_BIN, the pinned venv, PATH, ~/.local/bin - and the tool
 # that won is named in the log, together with the git sha of its source tree.
 BB="${BB_BIN:-}"
@@ -86,7 +97,32 @@ esac
 # point; fall back to the system python only when that sibling is missing.
 BB_ROOT="$(dirname "$(dirname "$BB")")"
 BB_PY="$BB_ROOT/bin/python3"
-[ -x "$BB_PY" ] || BB_PY="$(command -v python3)"
+# A sibling that exists is not a sibling that works: when BB_BIN points at a
+# wrapper elsewhere, "$BB_ROOT/bin/python3" is not the venv interpreter and the
+# validator dies with ModuleNotFoundError - a hard failure with a swallowed
+# reason. So the candidate must PROVE it can import the tool, otherwise fall
+# back to the pinned venv's interpreter and only then give up, by name.
+if [ ! -x "$BB_PY" ] || ! "$BB_PY" -c 'import betterbench' >/dev/null 2>&1; then
+  BB_PY=/srv/community-repos/BetterBench-wt-v060/.venv/bin/python3
+fi
+if ! "$BB_PY" -c 'import betterbench' >/dev/null 2>&1; then
+  fail "validator interpreter $BB_PY cannot import betterbench - the field check would be a no-op (point BB_BIN at the pinned venv entry point)"
+fi
+# Where the module actually comes from is the anti-forgery leg of the tool pin.
+# --version is one line of text a wrapper can print; a second install (an older
+# checkout, /usr/local, a site-packages tree someone touched) reports 0.6.0 too
+# and then produces artifacts that look comparable but never came from the
+# pinned code.  The campaign pins a commit of one checkout, so "another coherent
+# venv" is not a qualification either - only the pinned tree counts.  Measured
+# 2026-11-22: a self-consistent foreign tree under BB_BIN's own root passed a
+# BB_ROOT-relative check and had to be caught by this absolute one.
+BB_MOD=$("$BB_PY" -c 'import betterbench,os;print(os.path.dirname(betterbench.__file__))' 2>/dev/null || true)
+[ -n "$BB_MOD" ] || fail "tool pin: cannot locate the betterbench module for $BB_PY"
+case "$BB_MOD" in
+  /srv/community-repos/BetterBench-wt-v060/*) : ;;
+  *) fail "tool pin: betterbench module is $BB_MOD, not the pinned tree /srv/community-repos/BetterBench-wt-v060 (a second install would report its own numbers)" ;;
+esac
+echo "[bb-campaign] validator interpreter=$BB_PY module=$BB_MOD"
 [ -f "$CFG_SRC" ] || fail "pinned config missing: $CFG_SRC"
 have="$(sha256sum "$CFG_SRC" | awk '{print $1}')"
 [ "$have" = "$CFG_SHA" ] || fail "pinned config sha mismatch: have $have want $CFG_SHA"
@@ -170,7 +206,7 @@ record_power "$GPUQ_OUT/power-after.txt"
 # Reimplementing the schema here would let the step and the runner disagree.
 "$BB_PY" - "$GPUQ_OUT/results.json" \
           /srv/community-repos/qwen38-flashnext-nvfp4-kv/scripts/gpu-queue <<'PY' \
-  || fail "results.json failed field validation"
+  || fail "results.json failed field validation (reason: the 'FAILED:' line above)"
 import json, sys
 sys.path.insert(0, sys.argv[2])
 import gpuq_parsers as P

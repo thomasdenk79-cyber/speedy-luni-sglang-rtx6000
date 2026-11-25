@@ -31,7 +31,7 @@ Everything here runs on t15. **Two hard rules decide who types what:**
 | Reference source | `rc/qwen38-rc2` = `a090492091c7ed527d7f48faf35e9dec71e0f034` | `env -u GIT_INDEX_FILE git -C /srv/community-repos/sglang-wt-speedybase rev-parse HEAD` |
 | Reference worktree | `/srv/community-repos/sglang-wt-speedybase` (private to this task, clean) | `git status --porcelain` empty |
 | Container image | `docker.io/lmsysorg/sglang:nightly-dev-cu13-20261117-25c1c439` | job `IMAGE`, rule R9 also compares image **IDs** against `qwen38-rc2` |
-| Bench tool | BetterBench `0.6.0` = tag `v0.6.0` (`d00ad5ec8098c06584a88ec3468bacd37d5ed098`), clean checkout, own venv at `/srv/community-repos/BetterBench-wt-v060/.venv/bin/betterbench` (sha256 `22ffad0b4024859a1192d19a46a11adda7f25717bab22eb23c3fa76b1df68470`) | `$BB --version` → `BetterBench 0.6.0`; `CORPUS_VERSION 1.0`, `RESULTS_SCHEMA 2`; `git status --porcelain` empty |
+| Bench tool | BetterBench `0.6.0` = tag `v0.6.0` (`d00ad5ec8098c06584a88ec3468bacd37d5ed098`), clean checkout, own venv at `/srv/community-repos/BetterBench-wt-v060/.venv/bin/betterbench` (sha256 `22ffad0b4024859a1192d19a46a11adda7f25717bab22eb23c3fa76b1df68470`). **Not** `~/.local/bin/betterbench` (sha256 `4ccd7c39…`): a uv tool-env whose `betterbench/*.py` are byte-identical to the pinned tree, so it prints the same `0.6.0` — it is a different **launcher**, not a different build, and it is not under source control (measured 2026-11-22) | `$BB --version` → `BetterBench 0.6.0`; `CORPUS_VERSION 1.0`, `RESULTS_SCHEMA 2`; `git status --porcelain` empty |
 | Bench config | `bench/campaign-20261121.json`, sha256 `ef946cf2cd674d08bbc9c2ca2219e282f75873c86b8b6c5d371a874c3dd9a3a9` | asserted by the step before every run |
 | Corpus | shipped `corpus/v1` (8 categories, **29 prompts**), file-tree sha256 `b31e9141ad5cf1ea29f62612afc528c96649cbb0dd1504926461cfcd75a6beed`, tool `content_hash` `e332dceff176d033` | tool hash == donor `env.corpus_hash`, see `21-DONOR-RECORD.md` §5; per-file hashes in `20-BENCH-PLAN.md` §3 |
 | Ladder | c = 1, 2, 4, 6; greedy; seed 20261121; 48 requests/level (29 corpus prompts + 19 warmup-upfront copies, v0.6.0 `phase_warmup`); 5 prefill depths | `Config.load()` echo in `results.json` |
@@ -66,9 +66,19 @@ env -u GIT_INDEX_FILE git -C /srv/community-repos/qwen38-flashnext-nvfp4-kv \
 nvidia-smi --query-gpu=power.limit,power.default_limit,power.draw,clocks.sm \
   --format=csv,noheader,nounits        # 300.00, 600.00, <draw>, <clocks> (measured 2026-11-22)
 
-# 2.5 the bench tool and its pinned artifacts
-betterbench --version                             # BetterBench 0.6.0
-sha256sum docs/perf-2026-11-21/bench/campaign-20261121.json
+# 2.5 the bench tool and its pinned artifacts — always the PINNED venv binary,
+#     never PATH: ~/.local/bin/betterbench is a uv tool-env whose 13 betterbench/*.py
+#     are sha256-identical to this tree (measured 2026-11-22), so it prints the same
+#     "0.6.0"; only the launcher differs (4ccd7c39… vs 22ffad0b…). A PATH check
+#     proves nothing about attribution — the pin is a git object, not a version string.
+BB=/srv/community-repos/BetterBench-wt-v060/.venv/bin/betterbench
+"$BB" --version                                   # BetterBench 0.6.0
+sha256sum "$BB" | cut -c1-12                      # 22ffad0b4024
+sha256sum bench/campaign-20261121.json            # ef946cf2cd67...
+env -u GIT_INDEX_FILE git -C /srv/community-repos/BetterBench-wt-v060 \
+  rev-parse HEAD                                  # d00ad5ec8098... = tag v0.6.0
+env -u GIT_INDEX_FILE git -C /srv/community-repos/BetterBench-wt-v060 \
+  status --porcelain                              # empty
 
 # 2.6 the reference worktree is still what the task pinned
 env -u GIT_INDEX_FILE git -C /srv/community-repos/sglang-wt-speedybase \
@@ -78,13 +88,13 @@ env -u GIT_INDEX_FILE git -C /srv/community-repos/sglang-wt-speedybase \
 ## 3. Staging and validation (agent-allowed, no GPU touched)
 
 Job files live with the campaign in
-`/srv/community-repos/speedy-luni-sglang-rtx6000/docs/perf-2026-11-21/bench/jobs/`
+`/srv/community-repos/speedy-luni-sglang-rtx6000/bench/jobs/`
 and follow the `gpuq-plan/jobs/` convention (one arm = one file = one server
 start, `REPEAT=1`, unique `NAME`, own `HICACHE_ROOT`).
 
 ```bash
 cd /srv/community-repos/speedy-luni-sglang-rtx6000
-J=docs/perf-2026-11-21/bench/jobs
+J=bench/jobs
 
 # 3.1 the queue's own loader: format, step names, ceilings
 for f in $J/arm-a-rc2-r*.env $J/arm-c-chunk16k-r1.env; do
@@ -94,7 +104,59 @@ done
 # 3.2 isolation rules R1-R10 plus the live-production diff (dry-run only, no GPU)
 cd /srv/community-repos/qwen38-flashnext-nvfp4-kv
 python3 gpuq-plan/check_arm.py $J/*.env; echo "rc=$?"
+
+# 3.3 the guard matrix: proves every gate in bb-campaign.sh actually fires.
+#     20 injected faults plus 1 happy path, each case asserts exit code AND the
+#     FAIL text, so a gate that quietly stopped firing cannot pass. The happy
+#     path is what makes the matrix trustworthy: it proves the mock really does
+#     produce a parseable, field-valid results.json. No GPU, no lease, no engine.
+cd /srv/community-repos/speedy-luni-sglang-rtx6000
+bench/test-guards.sh --keep --out /tmp/opencode/sb-guard/m; echo "matrix_rc=$?"
+
+# 3.4 corpus identity: the exact call behind 20-BENCH-PLAN.md §3. The form
+#     content_hash({category: [p.id for p in ps]}) is what the tool itself does
+#     (betterbench/cli.py:185), so this is the tool's own number, not a lookalike.
+cd /srv/community-repos/BetterBench-wt-v060
+.venv/bin/python3 - <<'PY'
+import pathlib
+from betterbench.corpus import load_corpus
+from betterbench.env import content_hash
+corpus = load_corpus(pathlib.Path("corpus/v1"))
+print("prompts=%d categories=%d corpus_hash=%s"
+      % (sum(len(v) for v in corpus.values()), len(corpus),
+         content_hash({c: [p.id for p in ps] for c, ps in corpus.items()})))
+PY
 ```
+
+Measured 2026-11-22 (this task, CPU only): `prompts=29 categories=8
+corpus_hash=e332dceff176d033` — equal to the donor's `env.corpus_hash`, so the two
+runs bench the same prompts. An earlier draft of this file reached for
+`betterbench.env.load_category`, which does not exist in 0.6.0 (it belongs to the
+second install on this host); `bench/test-guards.sh` uses the form above.
+
+```bash
+# 3.5 the step on its own, the way gpuq calls it (contract, not a suggestion):
+#     flags are ONLY --arm= --cap= --repeat=; everything else arrives as env
+#     from the job file. Unknown flags are rejected with rc=1 by design — an
+#     earlier draft of this file (and of the task report) called the step with
+#     --campaign/--job/--out, which do not exist, so that "green" step case was
+#     never green. $GPUQ_OUT must exist: the step copies the pinned card into it
+#     and fails rather than creating a directory nobody asked for.
+STEP_OUT=/tmp/opencode/sb-guard/step; rm -rf "$STEP_OUT"; mkdir -p "$STEP_OUT"
+cd /srv/community-repos/speedy-luni-sglang-rtx6000
+python3 bench/mock_engine.py 31777 & MOCK=$!; sleep 2
+env GPUQ_MODEL=flash-next GPUQ_NAME=sb-step \
+    GPUQ_SGLANG_SRC=/srv/community-repos/sglang-wt-speedybase GPUQ_SGLANG_IMAGE=none \
+    GPUQ_URL=http://127.0.0.1:31777 GPUQ_OUT="$STEP_OUT" \
+    bash bench/bb-campaign.sh --arm=arm-a-rc2 --cap=300 --repeat=1; rc=$?
+kill $MOCK 2>/dev/null; echo "step_rc=$rc"      # 0, and $STEP_OUT/results.json is parseable
+```
+
+Measured 2026-11-22: `step_rc=0`, `[bb-campaign] ok tool=0.6.0 schema=2 corpus=1.0`,
+artifact `results.json` 236 523 bytes (sha256 `fa3d1da23ecb…`) plus `server-info.json`,
+`power-before.txt`, `power-after.txt`. The numbers inside are mock numbers and mean
+nothing — the point is that the pipeline, all five gates and the validator interpreter
+work end to end before a real GPU minute is spent.
 
 Measured on 2026-11-22 (the state the owner inherits):
 
@@ -134,7 +196,7 @@ ls scripts/gpu-queue/queue/pending/            # foreign jobs stay where they ar
 
 # 4.1 stage this campaign only, in the order of bench/jobs/window-sb.txt
 while read -r f; do $Q add "/srv/community-repos/speedy-luni-sglang-rtx6000/$f"; done \
-  < docs/perf-2026-11-21/bench/jobs/window-sb.txt    # run from the campaign repo root
+  < bench/jobs/window-sb.txt    # run from the campaign repo root
 $Q list
 
 # 4.2 the proof run: plan every step, no process, no GPU
@@ -240,3 +302,51 @@ standing instruction for windows on this card:
 Rollback for this whole task is documentation-only: the campaign files are new
 files in `docs/perf-2026-11-21/`, the shared queue and the shared repos are
 untouched, and no server was stopped, started or reconfigured by it.
+## 7. Landing and push (team state, not run state)
+
+All runs work in ONE shared worktree on ONE branch (`main`). A peer's
+`git push` publishes the commits of every run in the tree — so "landed
+locally, no push yet" is not a state a report can truthfully claim here.
+Reports state the landing as the commit on the ref plus its path list.
+
+The mechanical gate is `scripts/pushguard` (pre-push hook, installed in
+`.git/hooks`). Protected refs are `main` and `dev`; force-pushes and ref
+deletions are always refused; every decision is one JSON line in
+`log/push-gate.jsonl` (ignored via `.gitignore`, so the shared `git status`
+stays clean for the pins in §2).
+
+```bash
+cd /srv/community-repos/speedy-luni-sglang-rtx6000
+
+# 7.1 the gate is present (hooks do NOT survive a fresh clone — re-arm):
+/srv/luni-repos/luni-ai-operator/scripts/pushguard-hook status \
+  --repo /srv/community-repos/speedy-luni-sglang-rtx6000
+# missing? install it:
+/srv/luni-repos/luni-ai-operator/scripts/pushguard-hook install \
+  --repo /srv/community-repos/speedy-luni-sglang-rtx6000
+
+# 7.2 land your own paths only — private index, explicit list, count gate
+out=$(/srv/luni-repos/luni-ai-operator/scripts/repo_index.sh \
+      /srv/community-repos/speedy-luni-sglang-rtx6000 <task-slug>) || echo "index_rc=$?"
+eval "$out"
+git diff --cached --name-only            # sanity: only YOUR paths
+git ls-files | wc -l                     # must equal:
+env -u GIT_INDEX_FILE git ls-tree -r HEAD | wc -l
+scripts/pushguard >/dev/null 2>&1; echo "gate_usage_rc=$?"   # 2 = not a hook call, fine
+
+# 7.3 push with the owner's blessing in the environment (UTC stamp!)
+LUNI_PUSH_GATE=1 \
+LUNI_PUSH_REASON="Betreiber-Auftrag $(date -u '+%Y-%m-%d %H:%M'): <purpose>" \
+  git push origin main
+tail -2 log/push-gate.jsonl              # the audit line this push wrote
+```
+
+Without `LUNI_PUSH_GATE=1` + `LUNI_PUSH_REASON` the hook refuses
+(`rc=1`, a `refuse` line in the ledger) — that is the normal outcome for an
+unblessed push, not a bug to work around. `git push --no-verify` bypasses
+the hook and is reserved to the operator, never to a run.
+
+Provenance: because attribution cannot live in the reflog (a peer's push
+moves the ref, not you), every run logs its landing — commit SHA + explicit
+path list — to `/srv/luni-repos/luni-ai-operator/log/actions.log` via
+`bin/alog` and into its task report. See `AGENTS.md` in this repo.

@@ -90,3 +90,11 @@ Ramp levels have 4-14 requests each; too few for a verdict.
 - Accuracy GSM8K 96.4 %, MMLU 86.4 %.
 - Agent sim (matched): tool 0.825 s / 358 tok/s, refill 3.384 s / 399 tok/s, compact 0.988 s / 428 tok/s.
 - Verdict: best NVFP4 arm so far; default candidate is Cake decode + bf16 scratch.
+
+## Arm 1 rerun: bf16 scratch, no Cake
+Evidence `donor-nvfp4-bf16-rerun-20261125T000514Z/`. Same engine as arm 1.
+
+- Cold prefill 14,970 / 15,128 / 15,446 / 15,499 tok/s (8k-64k): the arm-1 deficit was a first-run artifact. FP8 scratch has no prefill benefit and is dropped.
+- BetterBench c1-c8: 320.3 / 475.8 / 561.5 / 631.6 / 651.8 / 696.8 / 737.6 / 766.7. Cake beats both non-Cake runs at every level (+1.0 to +3.2 %), so its gain is real.
+- Accuracy GSM8K 96.4 %, MMLU 86.8 %.
+- Decision: NVFP4 KV + Cake decode + bf16 scratch is the default candidate.
