@@ -74,5 +74,23 @@ The hypothesis was wrong: the per-call dequant, not the GEMM, is the bottleneck.
 The FP8 baseline stores FP8 weights and never dequantizes. P0.2b
 (`SGLANG_NVFP4_DENSE_PREFILL_FP8_CACHE=1`, also off by default) therefore caches
 an e4m3 copy made from BF16 at load time, removing the dequant from the hot path
-at the price of ~N*K VRAM per dense layer. Its screen is pending. A read-only
-review found no ABI blockers in P0.2 and a CUDA-capture guard was added.
+at the price of ~N*K VRAM per dense layer. A read-only review found no ABI
+blockers in P0.2 and a CUDA-capture guard was added.
+
+## Follow-up: P0.2b measured (positive)
+
+Screen `donor-nvfp4-dense-fp8cache-20261125T094954Z` (`000810f`), both switches
+on. Accuracy exactly baseline (242/250, 218/250). Cold prefill recovers most
+of the gap:
+
+| Depth | Control | Cached FP8 | vs control | FP8 baseline |
+|---:|---:|---:|---:|---:|
+| 8K | 11864 | 14265 | +20.2 % | 14939 (−4.5 %) |
+| 16K | 12096 | 14477 | +19.7 % | 15068 (−3.9 %) |
+| 32K | 12750 | 14811 | +16.2 % | 15528 (−4.6 %) |
+| 64K | 12734 | 14825 | +16.4 % | 15525 (−4.5 %) |
+
+**Trade-off:** KV capacity 947392 → 763392 (−19 % vs control, −12 % vs FP8
+baseline). The +9.3 % KV benefit of the dense arm is consumed by the ~1 GB FP8
+weight cache. This is the explicit speed-over-VRAM decision; both switches
+stay off by default. Full benchmark qualification is running.
