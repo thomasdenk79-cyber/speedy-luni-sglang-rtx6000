@@ -98,3 +98,14 @@ Evidence `donor-nvfp4-bf16-rerun-20261125T000514Z/`. Same engine as arm 1.
 - BetterBench c1-c8: 320.3 / 475.8 / 561.5 / 631.6 / 651.8 / 696.8 / 737.6 / 766.7. Cake beats both non-Cake runs at every level (+1.0 to +3.2 %), so its gain is real.
 - Accuracy GSM8K 96.4 %, MMLU 86.8 %.
 - Decision: NVFP4 KV + Cake decode + bf16 scratch is the default candidate.
+
+## Arm 4: Cake + SM120 MoE SwiGLU kernel
+`SGLANG_QSA_NVFP4_DECODE=cake`, `SGLANG_FLASHINFER_MOE_FUSED_FINALIZE=0`, `SGLANG_DONOR_SM120_SWIGLU=1`, `SGLANG_DONOR_SM120_TRACE=1`. Engine `f9bf31a`. Evidence `donor-nvfp4-cake-sm120-20261125T014250Z/`.
+
+- Wiring fixes before the kernel fired: `407a510` (VT verify routes allowed, in-prologue singleton prune applied before launch), `f9bf31a` (shape check on uint8 views; int64 views sent 100 % to CUTLASS). Trace `c316ea4` logs the failing gate.
+- Trace: `route=fused` for all decode/verify/draft shapes (91 keys); only >512-row prefill chunks and autotune use CUTLASS.
+- BetterBench vs arm 3 (Cake): +4.3 to +6.5 % at every level: 346.5 / 508.1 / 614.2 / 694.2 / 701.1 / 743.0 / 791.2 / 824.8. Now above FP8 KV at all levels (c1 +3.6 %, c4 +4.1 %, c8 +6.1 %).
+- Cold prefill unchanged: 14,939 / 15,069 / 15,528 / 15,525.
+- Accuracy GSM8K 96.8 %, MMLU 87.2 %.
+- Agent sim (matched): tool 0.727 s / 364 tok/s, refill 3.338 s / 467 tok/s, compact 0.916 s / 401 tok/s.
+- Confounder: `FUSED_FINALIZE=0` is also on; the control arm (Cake + `FUSED_FINALIZE=0`, no SM120) is running.
