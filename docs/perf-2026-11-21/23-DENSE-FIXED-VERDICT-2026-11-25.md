@@ -56,3 +56,23 @@ decode. **Not** a free speed win on prefill. Next candidate is P0.2
 (`SGLANG_NVFP4_DENSE_PREFILL_FP8=1`, NVFP4→FP8 e4m3 + `fp8_scaled_mm`), which
 targets exactly the −19 % prefill gap; switch-gated and still GPU-unvalidated
 as of this note.
+
+## Follow-up: P0.2 measured (negative)
+
+Screen `donor-nvfp4-dense-fp8prefill-20261125T093020Z` (`282bbc6`) with
+`SGLANG_NVFP4_DENSE_PREFILL_FP8=1`: accuracy unchanged (GSM8K 242/250,
+MMLU 216/250, within noise), but cold prefill got **worse**, not better:
+
+| Depth | Control | P0.2 FP8 | Delta | FP8 baseline |
+|---:|---:|---:|---:|---:|
+| 8K | 11864 | 11454 | −3.5 % | 14939 |
+| 16K | 12096 | 11530 | −4.7 % | 15068 |
+| 32K | 12750 | 12302 | −3.5 % | 15528 |
+| 64K | 12734 | 12340 | −3.1 % | 15525 |
+
+The hypothesis was wrong: the per-call dequant, not the GEMM, is the bottleneck.
+The FP8 baseline stores FP8 weights and never dequantizes. P0.2b
+(`SGLANG_NVFP4_DENSE_PREFILL_FP8_CACHE=1`, also off by default) therefore caches
+an e4m3 copy made from BF16 at load time, removing the dequant from the hot path
+at the price of ~N*K VRAM per dense layer. Its screen is pending. A read-only
+review found no ABI blockers in P0.2 and a CUDA-capture guard was added.
